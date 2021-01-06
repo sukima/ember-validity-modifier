@@ -2,9 +2,10 @@ import { modifier } from 'ember-modifier';
 import { validate } from 'ember-validity-modifier/utils/validate';
 
 const commaSeperate = s => s.split(',').map(i => i.trim()).filter(Boolean);
-const reduceValidators = (validators, ...args) => validators
-  .map(validator => validator(...args))
-  .reduce((a, b) => [...a, ...b], []);
+const reduceValidators = async (validators, ...args) => {
+  let errors = await Promise.all(validators.map(validator => validator(...args)));
+  return errors.reduce((a, b) => [...a, ...b], []);
+};
 
 export default modifier(function validity(
   element,
@@ -13,8 +14,8 @@ export default modifier(function validity(
 ) {
   let autoValidationEvents = commaSeperate(eventNames);
   let autoValidationHandler = () => validate(element);
-  let validateHandler = () => {
-    let [error = ''] = reduceValidators(validators, element);
+  let validateHandler = async () => {
+    let [error = ''] = await reduceValidators(validators, element);
     element.checkValidity();
     element.setCustomValidity(error);
     element.dispatchEvent(new CustomEvent('validated'));

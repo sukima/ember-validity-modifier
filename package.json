@@ -1,13 +1,13 @@
 {
   "name": "ember-validity-modifier",
   "version": "0.0.0",
-  "description": "The default blueprint for ember-cli addons.",
+  "description": "Ember addon to add custom validity (form validation) to form fields",
   "keywords": [
     "ember-addon"
   ],
-  "repository": "",
+  "repository": "https://github.com/sukima/ember-validity-modifier.git",
   "license": "MIT",
-  "author": "",
+  "author": "Devin Weaver (@sukima) <suki@tritarget.org>",
   "directories": {
     "doc": "doc",
     "test": "tests"

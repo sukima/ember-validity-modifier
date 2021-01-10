@@ -93,7 +93,7 @@ export default class MyForm extends Component {
     let { target: form } = event;
     event.preventDefault();
     await validate(...form.elements);
-    if (form.checkValidity()) {
+    if (form.reportValidity()) {
       console.log('Fake submit action', Object.fromEntries(new FormData(form)));
     }
   }

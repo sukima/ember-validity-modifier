@@ -1,5 +1,5 @@
 import { modifier } from 'ember-modifier';
-import { validate } from 'ember-validity-modifier/utils/validate';
+import { validate, registerValidatable } from 'ember-validity-modifier/utils/validate';
 
 const commaSeperate = s => s.split(',').map(i => i.trim()).filter(Boolean);
 const reduceValidators = async (validators, ...args) => {
@@ -24,6 +24,7 @@ export default modifier(function validity(
   autoValidationEvents.forEach(eventName => {
     element.addEventListener(eventName, autoValidationHandler);
   });
+  registerValidatable(element);
   return () => {
     element.removeEventListener('validate', validateHandler);
     autoValidationEvents.forEach(eventName => {

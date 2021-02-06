@@ -1,6 +1,6 @@
 {
   "name": "ember-validity-modifier",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Ember addon to add custom validity (form validation) to form fields",
   "keywords": [
     "ember-addon"

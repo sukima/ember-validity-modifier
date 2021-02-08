@@ -155,7 +155,8 @@ export default MyComponent extends Component {
   @tracked validationMessage;
 
   @action
-  setValidationMessage({ validationMessage }) {
+  setValidationMessage(event) {
+    let { validationMessage } = event.target;
     this.didValidate = true;
     this.validationMessage = validationMessage;
   }

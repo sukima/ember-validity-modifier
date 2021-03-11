@@ -122,4 +122,21 @@ module('Integration | Modifier | validity', function(hooks) {
     sinon.assert.calledOnce(this.testValidator);
   });
 
+  test('if eager, validates on initial render', async function() {
+    this.testValidator = sinon.stub().returns([]);
+    await render(hbs`<input {{validity this.testValidator eager=true}}>`);
+    sinon.assert.calledOnce(this.testValidator);
+  });
+
+  test('if eager, validates if arguments change', async function() {
+    this.testValidator = sinon.stub().returns([]);
+    this.set('match', 'foo');
+    await render(hbs`<input {{validity (fn this.testValidator this.match) eager=true}}>`);
+    sinon.assert.calledOnce(this.testValidator);
+    sinon.assert.calledWith(this.testValidator, 'foo');
+    await this.set('match', 'foo-bar');
+    sinon.assert.calledTwice(this.testValidator);
+    sinon.assert.calledWith(this.testValidator, 'foo-bar');
+  });
+
 });

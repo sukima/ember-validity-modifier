@@ -100,6 +100,23 @@ export default class MyForm extends Component {
 }
 ```
 
+#### Example eager validation
+
+To validate the form state on initial render and any time its dependent arguments change, use the `eager` option.
+
+```hbs
+  <input {{validity (fn this.matchTo this.match) on="change" eager=true}}>
+```
+
+```js
+export default MyComponent extends Component {
+  @action
+  matchTo(match, { value }) {
+    return value === match ? [] : ['Must match exactly'];
+  }
+}
+```
+
 #### Example with select
 
 ```hbs

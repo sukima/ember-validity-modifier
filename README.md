@@ -117,6 +117,8 @@ export default MyComponent extends Component {
 }
 ```
 
+**Tip:** For Glimmer's tracking to work properly, make sure you reference each tracked property you intend to validate against unconditionally in your validation method.
+
 #### Example with select
 
 ```hbs

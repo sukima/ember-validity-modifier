@@ -15,10 +15,10 @@ export default modifier(function validity(
   let isValidating = false;
   let autoValidationEvents = commaSeperate(eventNames);
   let autoValidationHandler = () => validate(element);
-  let validateHandler = async () => {
+  let validateHandler = async (event) => {
     if (isValidating) { return; }
     isValidating = true;
-    let [error = ''] = await reduceValidators(validators, element);
+    let [error = ''] = await reduceValidators(validators, element, event);
     element.checkValidity();
     element.setCustomValidity(error);
     element.dispatchEvent(new CustomEvent('validated'));

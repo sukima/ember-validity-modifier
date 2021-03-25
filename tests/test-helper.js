@@ -8,6 +8,8 @@ import { start } from 'ember-qunit';
 sinon.assert.pass = assertion => QUnit.assert.ok(true, assertion);
 sinon.assert.fail = assertion => QUnit.assert.ok(false, assertion);
 
+QUnit.testDone(() => sinon.restore());
+
 setApplication(Application.create(config.APP));
 
 start();

@@ -12,13 +12,17 @@ export default modifier(function validity(
   validators,
   { on: eventNames = 'change,input,blur' }
 ) {
+  let isValidating = false;
   let autoValidationEvents = commaSeperate(eventNames);
   let autoValidationHandler = () => validate(element);
   let validateHandler = async () => {
+    if (isValidating) { return; }
+    isValidating = true;
     let [error = ''] = await reduceValidators(validators, element);
     element.checkValidity();
     element.setCustomValidity(error);
     element.dispatchEvent(new CustomEvent('validated'));
+    isValidating = false;
   };
   element.addEventListener('validate', validateHandler);
   autoValidationEvents.forEach(eventName => {

@@ -100,12 +100,12 @@ export default class MyForm extends Component {
 }
 ```
 
-#### Example eager validation
+#### Example with `validator-update` event
 
-To validate the form state on initial render and any time its dependent arguments change, use the `eager` option.
+To validate the form state on initial render and any time its dependent arguments change, add the `'validator-update'` event to the list of events passed in via the `on` argument.
 
 ```hbs
-  <input {{validity (fn this.matchTo this.match) on="change" eager=true}}>
+  <input {{validity (fn this.matchTo this.match) on="change,validator-update"}}>
 ```
 
 ```js

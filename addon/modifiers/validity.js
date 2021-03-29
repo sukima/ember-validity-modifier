@@ -10,7 +10,7 @@ const reduceValidators = async (validators, ...args) => {
 export default modifier(function validity(
   element,
   validators,
-  { on: eventNames = 'change,input,blur', eager = false }
+  { on: eventNames = 'change,input,blur' }
 ) {
   let autoValidationEvents = commaSeperate(eventNames);
   let autoValidationHandler = () => validate(element);
@@ -21,11 +21,16 @@ export default modifier(function validity(
     element.dispatchEvent(new CustomEvent('validated'));
   };
   element.addEventListener('validate', validateHandler);
+  let watchForValidatorUpdates = false;
   autoValidationEvents.forEach(eventName => {
+    if (eventName === 'validator-update') {
+      watchForValidatorUpdates = true;
+      return;
+    }
     element.addEventListener(eventName, autoValidationHandler);
   });
   registerValidatable(element);
-  if (eager) {
+  if (watchForValidatorUpdates) {
     validate(element);
   }
   return () => {

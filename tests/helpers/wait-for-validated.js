@@ -6,19 +6,19 @@ function createDeferred() {
   return { resolve, promise };
 }
 
+function getDeferred(element) {
+  let deferred = validatables.get(element) ?? createDeferred();
+  validatables.set(element, deferred);
+  return deferred;
+}
+
 export function validatable(element) {
-  element.addEventListener('validated', event => {
-    if (!validatables.has(element)) {
-      validatables.set(element, createDeferred());
-    }
-    validatables.get(element).resolve(event);
-  });
+  let handler = (event) => getDeferred(element).resolve(event);
+  element.addEventListener('validated', handler);
   return element;
 }
 
-export function waitForValidated(element) {
-  if (!validatables.has(element)) {
-    validatables.set(element, createDeferred());
-  }
-  return validatables.get(element).promise;
+export async function waitForValidated(element) {
+  await getDeferred(element).promise;
+  validatables.delete(element);
 }

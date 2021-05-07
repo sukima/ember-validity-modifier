@@ -20,6 +20,17 @@ module('Integration | Modifier | validity', function(hooks) {
     assert.strictEqual(subject.validationMessage, '');
   });
 
+  test('multiple validate events only validate once per cycle', async function() {
+    this.testValidator = sinon.stub().returns([]);
+    await render(hbs`<input {{validity this.testValidator on=""}}>`);
+    let subject = validatable(find('input'));
+    subject.dispatchEvent(new CustomEvent('validate'));
+    subject.dispatchEvent(new CustomEvent('validate'));
+    subject.dispatchEvent(new CustomEvent('validate'));
+    await waitForValidated(subject);
+    sinon.assert.calledOnce(this.testValidator);
+  });
+
   test('multiple validators sets validity to true', async function(assert) {
     this.testValidator = sinon.stub().returns([]);
     await render(hbs`

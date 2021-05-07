@@ -4,7 +4,7 @@ import { validate, registerValidatable } from 'ember-validity-modifier/utils/val
 const commaSeperate = s => s.split(',').map(i => i.trim()).filter(Boolean);
 const reduceValidators = async (validators, ...args) => {
   let errors = await Promise.all(validators.map(validator => validator(...args)));
-  return errors.reduce((a, b) => [...a, ...b], []);
+  return errors.flat();
 };
 
 export default modifier(function validity(

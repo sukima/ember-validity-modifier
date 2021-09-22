@@ -2,12 +2,13 @@ import { assert } from '@ember/debug';
 import { modifier } from 'ember-modifier';
 import { deprecate } from '@ember/application/deprecations';
 import {
-  validate,
   isValidatable,
   registerValidatable,
   unregisterValidatable,
 } from 'ember-validity-modifier/utils/validate';
 
+const doNothing = () => {};
+const rethrow = (error) => { throw error; }
 const commaSeperate = s => s.split(',').map(i => i.trim()).filter(Boolean);
 const reduceValidators = async (validators, ...args) => {
   let errors = await Promise.all(validators.map(validator => validator(...args)));
@@ -38,16 +39,22 @@ export default modifier(function validity(
     'Only one validity modifier can be applied to an element',
     !isValidatable(element),
   );
+  let watchForValidatorUpdates = false;
   let autoValidationEvents = commaSeperate(eventNames);
-  let autoValidationHandler = () => validate(element);
-  let validateHandler = async () => {
-    let [error = ''] = await reduceValidators(validators, element);
-    element.checkValidity();
-    element.setCustomValidity(error);
-    element.dispatchEvent(new CustomEvent('validated'));
+  let autoValidationHandler = () => updateValidity(element);
+  let updateValidity = async (target) => {
+    let [error = ''] = await reduceValidators(validators, target);
+    target.checkValidity();
+    target.setCustomValidity(error);
+    target.dispatchEvent(new CustomEvent('validated', { bubbles: true }));
+  };
+  let validateHandler = (event) => {
+    let { resolve = doNothing, reject = rethrow } = event.detail ?? {};
+    event.preventDefault();
+    event.stopPropagation();
+    updateValidity(event.target).then(resolve, reject);
   };
   element.addEventListener('validate', validateHandler);
-  let watchForValidatorUpdates = false;
   autoValidationEvents.forEach(eventName => {
     if (eventName === 'validator-update') {
       watchForValidatorUpdates = true;
@@ -66,10 +73,10 @@ export default modifier(function validity(
         until: '2.0.0'
       }
     );
-    validate(element);
+    updateValidity(element); // Do not await, allow unhandled errors
   } else {
     AutoTrackingExerciser.from(watch)
-      .exercise(() => validate(element));
+      .exercise(() => updateValidity(element));
   }
   return () => {
     unregisterValidatable(element);

@@ -1,15 +1,16 @@
 const validatables = new WeakSet();
 
 function validateElement(element) {
-  if (!isValidatable(element)) { return; }
-  let validateEvent = new CustomEvent('validate');
-  return new Promise(resolve => {
-    let handler = () => {
-      element.removeEventListener('validated', handler);
+  return new Promise((resolve, reject) => {
+    let eventDetail = { resolve, reject };
+    let validateEvent = new CustomEvent('validate', {
+      bubbles: true,
+      cancelable: true,
+      detail: eventDetail,
+    });
+    if (element.dispatchEvent(validateEvent)) {
       resolve();
-    };
-    element.addEventListener('validated', handler);
-    element.dispatchEvent(validateEvent);
+    }
   });
 }
 

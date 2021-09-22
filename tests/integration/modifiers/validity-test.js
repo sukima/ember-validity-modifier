@@ -27,6 +27,21 @@ module('Integration | Modifier | validity', function(hooks) {
     assert.strictEqual(subject.validationMessage, '');
   });
 
+  test('supports wrapped inputs', async function(assert) {
+    this.testValidator = sinon.stub().returns([]);
+    await render(hbs`
+      <div {{validity this.testValidator on=""}}>
+        <input>
+      </div>
+    `);
+    let subject = find('input');
+    await validate(subject);
+    sinon.assert.calledOnce(this.testValidator);
+    sinon.assert.calledWith(this.testValidator, subject);
+    assert.ok(subject.validity.valid, 'expected validity to be valid');
+    assert.strictEqual(subject.validationMessage, '');
+  });
+
   test('prevents multiple modifiers on a single element', async function() {
     let onErrorSpy = sinon.spy();
     this.testValidator = sinon.stub().returns([]);

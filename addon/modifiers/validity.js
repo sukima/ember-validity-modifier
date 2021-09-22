@@ -1,6 +1,12 @@
+import { assert } from '@ember/debug';
 import { modifier } from 'ember-modifier';
-import { validate, registerValidatable } from 'ember-validity-modifier/utils/validate';
 import { deprecate } from '@ember/application/deprecations';
+import {
+  validate,
+  isValidatable,
+  registerValidatable,
+  unregisterValidatable,
+} from 'ember-validity-modifier/utils/validate';
 
 const commaSeperate = s => s.split(',').map(i => i.trim()).filter(Boolean);
 const reduceValidators = async (validators, ...args) => {
@@ -28,6 +34,10 @@ export default modifier(function validity(
   validators,
   { watch = [], on: eventNames = 'change,input,blur' }
 ) {
+  assert(
+    'Only one validity modifier can be applied to an element',
+    !isValidatable(element),
+  );
   let autoValidationEvents = commaSeperate(eventNames);
   let autoValidationHandler = () => validate(element);
   let validateHandler = async () => {
@@ -62,6 +72,7 @@ export default modifier(function validity(
       .exercise(() => validate(element));
   }
   return () => {
+    unregisterValidatable(element);
     element.removeEventListener('validate', validateHandler);
     autoValidationEvents.forEach(eventName => {
       element.removeEventListener(eventName, autoValidationHandler);

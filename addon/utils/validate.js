@@ -17,10 +17,14 @@ export function validate(...elements) {
   return Promise.all(elements.map(validateElement));
 }
 
+export function isValidatable(element) {
+  return validatables.has(element);
+}
+
 export function registerValidatable(element) {
   validatables.add(element);
 }
 
-export function isValidatable(element) {
-  return validatables.has(element);
+export function unregisterValidatable(element) {
+  validatables.delete(element);
 }

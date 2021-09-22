@@ -4,7 +4,9 @@ import {
   fillIn,
   find,
   render,
-  settled
+  resetOnerror,
+  settled,
+  setupOnerror
 } from '@ember/test-helpers';
 import { setupRenderingTest } from 'ember-qunit';
 import { validate } from 'ember-validity-modifier';
@@ -23,6 +25,29 @@ module('Integration | Modifier | validity', function(hooks) {
     sinon.assert.calledOnce(this.testValidator);
     assert.ok(subject.validity.valid, 'expected validity to be valid');
     assert.strictEqual(subject.validationMessage, '');
+  });
+
+  test('prevents multiple modifiers on a single element', async function() {
+    let onErrorSpy = sinon.spy();
+    this.testValidator = sinon.stub().returns([]);
+    setupOnerror(onErrorSpy);
+    try {
+      await render(hbs`
+        <input
+          {{validity this.testValidator on=""}}
+          {{validity this.testValidator on=""}}
+        >
+      `);
+    } finally {
+      resetOnerror();
+    }
+
+    sinon.assert.calledWith(
+      onErrorSpy,
+      sinon.match({
+        message: sinon.match(/Only one validity modifier can be applied to an element/),
+      }),
+    );
   });
 
   test('multiple validators sets validity to true', async function(assert) {

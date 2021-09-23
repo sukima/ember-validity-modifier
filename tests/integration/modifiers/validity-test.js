@@ -167,25 +167,6 @@ module('Integration | Modifier | validity', function(hooks) {
     sinon.assert.calledOnce(this.testValidator);
   });
 
-  test('validates on initial render if validator-update is present in list of events', async function() {
-    this.testValidator = sinon.stub().returns([]);
-    await render(hbs`<input {{validity this.testValidator on="validator-update"}}>`);
-    sinon.assert.calledOnce(this.testValidator);
-  });
-
-  test('validates if validator-update event is present and arguments change', async function() {
-    this.testValidator = sinon.stub().returns([]);
-    this.set('match', 'foo');
-    await render(hbs`<input {{validity (fn this.testValidator this.match) on="validator-update,change"}}>`);
-    sinon.assert.calledOnce(this.testValidator);
-    sinon.assert.calledWith(this.testValidator, 'foo');
-    await this.set('match', 'foo-bar');
-    sinon.assert.calledTwice(this.testValidator);
-    sinon.assert.calledWith(this.testValidator, 'foo-bar');
-    await fillIn('input', 'foo-bar');
-    sinon.assert.calledThrice(this.testValidator);
-  });
-
   test('validates on initial render if watch is true', async function() {
     this.testValidator = sinon.stub().returns([]);
     await render(hbs`<input {{validity this.testValidator on="" watch=true}}>`);

@@ -132,27 +132,6 @@ To validate the form state on initial render and any time **any** of its depende
   }}>
 ```
 
-#### Example with `validator-update` event
-
-**This has been deprecated. See [watch argument](#example-with-watch-argument).**
-
-To validate the form state on initial render and any time its dependent arguments change, add the `'validator-update'` event to the list of events passed in via the `on` argument.
-
-```hbs
-  <input {{validity (fn this.matchTo this.match) on="change,validator-update"}}>
-```
-
-```js
-export default MyComponent extends Component {
-  @action
-  matchTo(match, { value }) {
-    return value === match ? [] : ['Must match exactly'];
-  }
-}
-```
-
-**Tip:** For Glimmer's tracking to work properly, make sure you reference each tracked property you intend to validate against unconditionally in your validation method.
-
 #### Example with select
 
 ```hbs

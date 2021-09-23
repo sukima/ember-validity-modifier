@@ -1,6 +1,5 @@
 import { assert } from '@ember/debug';
 import { modifier } from 'ember-modifier';
-import { deprecate } from '@ember/application/deprecations';
 import {
   isValidatable,
   registerValidatable,
@@ -39,7 +38,6 @@ export default modifier(function validity(
     'Only one validity modifier can be applied to an element',
     !isValidatable(element),
   );
-  let watchForValidatorUpdates = false;
   let autoValidationEvents = commaSeperate(eventNames);
   let autoValidationHandler = () => updateValidity(element);
   let updateValidity = async (target) => {
@@ -56,28 +54,11 @@ export default modifier(function validity(
   };
   element.addEventListener('validate', validateHandler);
   autoValidationEvents.forEach(eventName => {
-    if (eventName === 'validator-update') {
-      watchForValidatorUpdates = true;
-      return;
-    }
     element.addEventListener(eventName, autoValidationHandler);
   });
   registerValidatable(element);
-  if (watchForValidatorUpdates) {
-    deprecate(
-      'Use "watch" argument instead of the "validator-update" event',
-      false,
-      {
-        id: 'ember-validity-modifier-validator-update',
-        url: 'https://github.com/sukima/ember-validity-modifier/#example-with-watch-argument',
-        until: '2.0.0'
-      }
-    );
-    updateValidity(element); // Do not await, allow unhandled errors
-  } else {
-    AutoTrackingExerciser.from(watch)
-      .exercise(() => updateValidity(element));
-  }
+  AutoTrackingExerciser.from(watch)
+    .exercise(() => updateValidity(element));
   return () => {
     unregisterValidatable(element);
     element.removeEventListener('validate', validateHandler);

@@ -1,6 +1,11 @@
 import { hbs } from 'ember-cli-htmlbars';
 import { module, test } from 'qunit';
-import { fillIn, find, render } from '@ember/test-helpers';
+import {
+  fillIn,
+  find,
+  render,
+  settled
+} from '@ember/test-helpers';
 import { setupRenderingTest } from 'ember-qunit';
 import { validate } from 'ember-validity-modifier';
 import { validatable, waitForValidated }
@@ -139,6 +144,50 @@ module('Integration | Modifier | validity', function(hooks) {
     sinon.assert.calledWith(this.testValidator, 'foo-bar');
     await fillIn('input', 'foo-bar');
     sinon.assert.calledThrice(this.testValidator);
+  });
+
+  test('validates on initial render if watch is true', async function() {
+    this.testValidator = sinon.stub().returns([]);
+    await render(hbs`<input {{validity this.testValidator on="" watch=true}}>`);
+    sinon.assert.calledOnce(this.testValidator);
+  });
+
+  test('validates if watch is present and its argument changes', async function() {
+    this.testValidator = sinon.stub().returns([]);
+    this.set('match', 'foo');
+    await render(hbs`<input {{validity
+      (fn this.testValidator this.match)
+      on="change"
+      watch=this.match
+    }}>`);
+    this.set('match', 'foo-bar');
+    await settled();
+    await fillIn('input', 'foo-bar');
+    sinon.assert.calledThrice(this.testValidator);
+    sinon.assert.calledWith(this.testValidator.getCall(0), 'foo');
+    sinon.assert.calledWith(this.testValidator.getCall(1), 'foo-bar');
+    sinon.assert.calledWith(this.testValidator.getCall(2), 'foo-bar');
+  });
+
+  test('validates if watch is present and an array of arguments that change', async function() {
+    this.testValidator = sinon.stub().returns([]);
+    this.set('match1', 'foo1');
+    this.set('match2', 'foo2');
+    await render(hbs`<input {{validity
+      (fn this.testValidator this.match1 this.match2)
+      on="change"
+      watch=(array this.match1 this.match2)
+    }}>`);
+    this.set('match1', 'foo1-bar');
+    await settled();
+    this.set('match2', 'foo2-bar');
+    await settled();
+    await fillIn('input', 'foo-bar');
+    sinon.assert.callCount(this.testValidator, 4);
+    sinon.assert.calledWith(this.testValidator.getCall(0), 'foo1', 'foo2');
+    sinon.assert.calledWith(this.testValidator.getCall(1), 'foo1-bar', 'foo2');
+    sinon.assert.calledWith(this.testValidator.getCall(2), 'foo1-bar', 'foo2-bar');
+    sinon.assert.calledWith(this.testValidator.getCall(3), 'foo1-bar', 'foo2-bar');
   });
 
 });

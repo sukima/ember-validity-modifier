@@ -100,7 +100,41 @@ export default class MyForm extends Component {
 }
 ```
 
+#### Example with `watch` argument
+
+To validate the form state on initial render add the `'watch'` argument with the value `true`.
+
+```hbs
+  <input {{validity
+    (fn this.matchTo this.match)
+    on="change"
+    watch=true
+  }}>
+```
+
+To validate the form state on initial render and any time **one** of its dependent arguments change, add the `'watch'` argument with the dependent property.
+
+```hbs
+  <input {{validity
+    (fn this.matchTo this.match)
+    on="change"
+    watch=this.match
+  }}>
+```
+
+To validate the form state on initial render and any time **any** of its dependent arguments change, add the `'watch'` argument using the `array` helper and a list of dependent properties.
+
+```hbs
+  <input {{validity
+    (fn this.matchTo this.match1 this.match2)
+    on="change"
+    watch=(array this.match1 this.macth2)
+  }}>
+```
+
 #### Example with `validator-update` event
+
+**This has been deprecated. See [watch argument](#example-with-watch-argument).**
 
 To validate the form state on initial render and any time its dependent arguments change, add the `'validator-update'` event to the list of events passed in via the `on` argument.
 

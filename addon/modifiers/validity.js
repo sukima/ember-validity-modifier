@@ -38,32 +38,40 @@ export default modifier(function validity(
     'Only one validity modifier can be applied to an element',
     !isValidatable(element),
   );
+  let taskCount = 0;
+  let lastTask = Promise.resolve();
   let autoValidationEvents = commaSeperate(eventNames);
-  let autoValidationHandler = () => updateValidity(element);
-  let updateValidity = async (target) => {
-    let [error = ''] = await reduceValidators(validators, target);
-    target.checkValidity();
-    target.setCustomValidity(error);
-    target.dispatchEvent(new CustomEvent('validated', { bubbles: true }));
+  let updateValidity = ({ target }) => {
+    taskCount++;
+    lastTask = lastTask.then(async () => {
+      taskCount--;
+      if (taskCount !== 0) { return; }
+      let [error = ''] = await reduceValidators(validators, target);
+      target.checkValidity();
+      target.setCustomValidity(error);
+      target.dispatchEvent(new CustomEvent('validated', { bubbles: true }));
+    });
+    return lastTask;
   };
   let validateHandler = (event) => {
     let { resolve = doNothing, reject = rethrow } = event.detail ?? {};
     event.preventDefault();
     event.stopPropagation();
-    updateValidity(event.target).then(resolve, reject);
+    updateValidity(event).then(resolve, reject);
   };
+  registerValidatable(element);
   element.addEventListener('validate', validateHandler);
   autoValidationEvents.forEach(eventName => {
-    element.addEventListener(eventName, autoValidationHandler);
+    element.addEventListener(eventName, updateValidity);
   });
   registerValidatable(element);
   AutoTrackingExerciser.from(watch)
-    .exercise(() => updateValidity(element));
+    .exercise(() => updateValidity({ target: element }));
   return () => {
     unregisterValidatable(element);
     element.removeEventListener('validate', validateHandler);
     autoValidationEvents.forEach(eventName => {
-      element.removeEventListener(eventName, autoValidationHandler);
+      element.removeEventListener(eventName, updateValidity);
     });
   };
 });

@@ -140,6 +140,21 @@ module('Integration | Modifier | validity', function(hooks) {
     assert.equal(subject.validationMessage, 'test-invalid');
   });
 
+  test('flattens multiple events in same validation execution', async function() {
+    let waitForValidations = new Promise(resolve => {
+      this.testValidator = sinon.stub().callsFake(() => (resolve(), []));
+    });
+    await render(hbs`<input {{validity this.testValidator on=""}}>`);
+    let subject = find('input');
+    subject.dispatchEvent(new CustomEvent('validate'));
+    subject.dispatchEvent(new CustomEvent('validate'));
+    subject.dispatchEvent(new CustomEvent('validate'));
+    subject.dispatchEvent(new CustomEvent('validate'));
+    subject.dispatchEvent(new CustomEvent('validate'));
+    await waitForValidations;
+    sinon.assert.calledOnce(this.testValidator);
+  });
+
   test('auto validates on DOM events', async function() {
     this.testValidator = sinon.stub().returns([]);
     await render(hbs`<input {{validity this.testValidator on="change"}}>`);

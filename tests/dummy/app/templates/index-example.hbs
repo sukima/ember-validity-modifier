@@ -1,0 +1,54 @@
+<section>
+  <h1>Create a new user</h1>
+  <form
+    id="userForm"
+    novalidate
+    {{on "validated" this.assignValidationMessages}}
+    {{on "submit" this.handleFormSubmit}}
+  >
+    <div class="full-width text-right"><sup class="required">*</sup> Required</div>
+
+    <label for="userForm-name">Name<sup class="required">*</sup></label>
+    <input id="userForm-name" name="name" required {{validity}}>
+    <span class="validation-message">{{this.validationMessages.name}}</span>
+
+    <label for="userForm-phone">Phone</label>
+    <input id="userForm-phone" name="phone" type="tel" {{validity}}>
+    <span class="validation-message">{{this.validationMessages.phone}}</span>
+
+    <label for="userForm-email">Email<sup class="required">*</sup></label>
+    <input id="userForm-email" name="email" type="email" required {{validity}}>
+    <span class="validation-message">{{this.validationMessages.email}}</span>
+
+    <label for="userForm-password">Password<sup class="required">*</sup></label>
+    <input
+      id="userForm-password"
+      name="password"
+      type="password"
+      required
+      {{validity (validate-password)}}
+    >
+    <span class="validation-message">{{this.validationMessages.password}}</span>
+
+    <label for="userForm-confirm">Confirm password<sup class="required">*</sup></label>
+    <input
+      id="userForm-confirm"
+      name="confirm"
+      type="password"
+      required
+      {{validity (validate-confirmation "userForm-password")}}
+    >
+    <span class="validation-message">{{this.validationMessages.confirm}}</span>
+
+    <button type="submit">Create</button>
+  </form>
+</section>
+
+<section>
+  <h1>Valid submissions</h1>
+  <ul id="userList">
+    {{#each @model.users as |user|}}
+      <li>"{{user.name}}" &lt;{{user.email}}&gt; &mdash; {{user.phone}}</li>
+    {{/each}}
+  </ul>
+</section>

@@ -13,6 +13,7 @@ import { validate } from 'ember-validity-modifier';
 import { validatable, waitForValidated }
   from 'dummy/tests/helpers/wait-for-validated';
 import sinon from 'sinon';
+import { helper } from '@ember/component/helper';
 
 module('Integration | Modifier | validity', function(hooks) {
   setupRenderingTest(hooks);
@@ -224,6 +225,57 @@ module('Integration | Modifier | validity', function(hooks) {
     sinon.assert.calledWith(this.testValidator.getCall(1), 'foo1-bar', 'foo2');
     sinon.assert.calledWith(this.testValidator.getCall(2), 'foo1-bar', 'foo2-bar');
     sinon.assert.calledWith(this.testValidator.getCall(3), 'foo1-bar', 'foo2-bar');
+  });
+
+  test('manages updates through a helper without watch mode', async function() {
+    let validatorStub = sinon.stub().returns([]);
+    this.owner.register(
+      'helper:test-validator',
+      helper(([option]) => (...args) => validatorStub(option, ...args))
+    );
+    this.set('match', 'foo');
+    await render(hbs`<input {{validity (test-validator this.match) on=""}}>`);
+    let subject = validatable(find('input'));
+    subject.dispatchEvent(new CustomEvent('validate'));
+    await waitForValidated(subject);
+    this.set('match', 'foo-bar');
+    await settled();
+    subject.dispatchEvent(new CustomEvent('validate'));
+    await waitForValidated(subject);
+    sinon.assert.calledTwice(validatorStub);
+    sinon.assert.calledWith(
+      validatorStub.getCall(0),
+      'foo',
+      sinon.match.instanceOf(Element)
+    );
+    sinon.assert.calledWith(
+      validatorStub.getCall(1),
+      'foo-bar',
+      sinon.match.instanceOf(Element)
+    );
+  });
+
+  test('manages updates through a helper with watch mode', async function() {
+    let validatorStub = sinon.stub().returns([]);
+    this.owner.register(
+      'helper:test-validator',
+      helper(([option]) => (...args) => validatorStub(option, ...args))
+    );
+    this.set('match', 'foo');
+    await render(hbs`<input {{validity (test-validator this.match) on="" watch=true}}>`);
+    this.set('match', 'foo-bar');
+    await settled();
+    sinon.assert.calledTwice(validatorStub);
+    sinon.assert.calledWith(
+      validatorStub.getCall(0),
+      'foo',
+      sinon.match.instanceOf(Element)
+    );
+    sinon.assert.calledWith(
+      validatorStub.getCall(1),
+      'foo-bar',
+      sinon.match.instanceOf(Element)
+    );
   });
 
 });

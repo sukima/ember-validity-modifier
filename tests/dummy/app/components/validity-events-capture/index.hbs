@@ -1,0 +1,15 @@
+<div
+  class="validity-events-capture"
+  ...attributes
+  {{on "input" this.recordEvent capture=true}}
+  {{on "change" this.recordEvent capture=true}}
+  {{on "blur" this.recordEvent capture=true}}
+  {{on "validate" this.recordEvent capture=true}}
+  {{on "validated" this.recordEvent capture=true}}
+>
+  {{yield (hash
+    buckets=this.eventBuckets
+    recordEvent=this.recordEvent
+    reset=this.reset
+  )}}
+</div>

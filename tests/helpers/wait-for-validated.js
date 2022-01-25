@@ -1,4 +1,5 @@
 const assignedDeferreds = new WeakMap();
+const validatedEventAttached = new WeakSet();
 
 function createDeferred() {
   let resolve;
@@ -7,19 +8,23 @@ function createDeferred() {
 }
 
 export function validatable(element) {
-  element.addEventListener('validated', event => {
-    if (!assignedDeferreds.has(element)) {
-      assignedDeferreds.set(element, createDeferred());
-    }
-    assignedDeferreds.get(element).resolve(event);
-    assignedDeferreds.delete(element);
-  });
+  if (!validatedEventAttached.has(element)) {
+    validatedEventAttached.add(element);
+    element.addEventListener('validated', event => {
+      if (!assignedDeferreds.has(element)) {
+        assignedDeferreds.set(element, createDeferred());
+      }
+      assignedDeferreds.get(element).resolve(event);
+    });
+  }
   return element;
 }
 
-export function waitForValidated(element) {
+export async function waitForValidated(element) {
   if (!assignedDeferreds.has(element)) {
     assignedDeferreds.set(element, createDeferred());
   }
-  return assignedDeferreds.get(element).promise;
+  let event = await assignedDeferreds.get(element).promise;
+  assignedDeferreds.delete(element);
+  return event;
 }

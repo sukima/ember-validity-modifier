@@ -1,0 +1,52 @@
+{{#let (toggleable) as |openFlag|}}
+  <div class="event-sequence-visualizer" ...attributes>
+    <h4>
+      <button
+        type="button"
+        class="expand-toggle"
+        aria-expanded={{if openFlag.value "true" "false"}}
+        {{on "click" openFlag.toggle}}
+      >
+        <span>{{if openFlag.value "–" "+"}}</span>
+        <span>{{@bucket.name}} ({{pluralize @bucket.size "sequence"}})</span>
+      </button>
+    </h4>
+
+    <div class="content" hidden={{this.isOpen}}>
+      {{#if openFlag.value}}
+        {{#if @bucket.size}}
+          <SequenceDiagram @source={{this.plantUmlSource}} @altText={{this.altText}} />
+          <ol>
+            {{#each @bucket.sequences as |sequence|}}
+              <li>
+                <span class="sequence">
+                  <code>{{sequence.initiator}}</code> event
+                  <time datetime={{sequence.validateEvent.timeStamp}}>
+                    {{sequence.validateEvent.timeStamp}}
+                  </time>
+                  →
+                  <code>validated</code> event
+                  <time datetime={{sequence.validatedEvent.timeStamp}}>
+                    {{sequence.validatedEvent.timeStamp}}
+                  </time>
+                </span>
+                {{#if sequence.errors}}
+                  <span class="invalid">Field was invalid.</span>
+                  <ul class="errors">
+                    {{#each sequence.errors as |error|}}
+                      <li>{{error}}</li>
+                    {{/each}}
+                  </ul>
+                {{else}}
+                  <span class="valid">Field was valid.</span>
+                {{/if}}
+              </li>
+            {{/each}}
+          </ol>
+        {{else}}
+          <p>No events captured yet.</p>
+        {{/if}}
+      {{/if}}
+    </div>
+  </div>
+{{/let}}

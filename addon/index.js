@@ -1,1 +1,1 @@
-export { validate } from './utils/validate';
+export { validate } from './-private/validity';

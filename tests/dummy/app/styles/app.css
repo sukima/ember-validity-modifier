@@ -3,18 +3,17 @@
   --valid-color: lightgreen;
   --invalid-color: salmon;
   --required-color: salmon;
+  --standout-color: lightblue;
 }
 
-main {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+article {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(430px, 1fr));
 }
 
 section {
   min-width: 400px;
-  flex-basis: 100%;
-  flex: 1;
+  padding: 0 1rem;
 }
 
 h1, h2 {
@@ -63,6 +62,13 @@ form > .full-width {
   grid-column: 1 / 3;
 }
 
+.debug-section {
+  background-color: var(--standout-color);
+  box-shadow: 4px 4px 4px darkgray;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
 .validation-message {
   text-align: right;
   margin-bottom: 0.1rem;
@@ -79,4 +85,44 @@ form > .full-width {
 
 .required {
   color: var(--required-color);
+}
+
+.event-sequence-visualizer .expand-toggle {
+  background-color: inherit;
+  text-align: inherit;
+  font-weight: inherit;
+  cursor: pointer;
+  width: 100%;
+  border: thin dotted transparent;
+  border-radius: 0;
+  padding 1rem 1.5rem;
+}
+
+.event-sequence-visualizer .expand-toggle:focus,
+.event-sequence-visualizer .expand-toggle:active,
+.event-sequence-visualizer .expand-toggle:focus-within {
+  border-color: black;
+}
+
+.sequence-diagram.placeholder {
+  background-color: #f6f6f6;
+  background-size: cover;
+  background-repeat: no-repeat;
+  position: relative;
+  overflow: hidden;
+  height: var(--sequence-diagram-height, 250px);
+  transition: height 0.1s linear;
+}
+
+.sequence-diagram.placeholder img {
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  transition: opacity 1s linear;
+}
+
+.sequence-diagram.placeholder img.loaded {
+  opacity: 1;
 }

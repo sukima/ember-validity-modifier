@@ -43,25 +43,31 @@
         </select>
         <span class="validation-message">{{this.validationMessages.contactMethod}}</span>
 
-        <label for="userForm-password">Password<sup class="required">*</sup></label>
-        <input
-          id="userForm-password"
-          name="password"
-          type="password"
-          required
-          {{validity (validate-password)}}
-        >
-        <span class="validation-message">{{this.validationMessages.password}}</span>
+        {{#let (change-tracker) as |tracker|}}
+          <label for="userForm-password">Password<sup class="required">*</sup></label>
+          <input
+            id="userForm-password"
+            name="password"
+            type="password"
+            required
+            {{validity (validate-password)}}
+            {{on "input" tracker.dirty}}
+          >
+          <span class="validation-message">{{this.validationMessages.password}}</span>
 
-        <label for="userForm-confirm">Confirm password<sup class="required">*</sup></label>
-        <input
-          id="userForm-confirm"
-          name="confirm"
-          type="password"
-          required
-          {{validity (validate-confirmation "userForm-password")}}
-        >
-        <span class="validation-message">{{this.validationMessages.confirm}}</span>
+          <label for="userForm-confirm">Confirm password<sup class="required">*</sup></label>
+          <input
+            id="userForm-confirm"
+            name="confirm"
+            type="password"
+            required
+            {{validity
+              (validate-confirmation "userForm-password")
+              validateTracked=tracker.count
+            }}
+          >
+          <span class="validation-message">{{this.validationMessages.confirm}}</span>
+        {{/let}}
 
         <button type="submit">Create</button>
       </form>

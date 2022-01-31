@@ -15,6 +15,7 @@
 
     <section>
       <h1>Create a new user</h1>
+      {{! BEGIN-SNIPPET index-example-form }}
       <form
         id="userForm"
         {{verify-form-validity submit=this.handleFormSubmit}}
@@ -71,6 +72,7 @@
 
         <button type="submit">Create</button>
       </form>
+      {{! END-SNIPPET }}
     </section>
 
     <section>
@@ -80,6 +82,15 @@
           <li>"{{user.name}}" &lt;{{user.email}}&gt; &mdash; {{user.phone}}</li>
         {{/each}}
       </ul>
+    </section>
+  </article>
+
+  <article>
+    <section>
+      <h1>Example code</h1>
+      {{#let (get-code-snippet "index-example-form.hbs") as |snippet|}}
+        <pre><code {{highlight lang=snippet.language}}>{{snippet.source}}</code></pre>
+      {{/let}}
     </section>
   </article>
 </ValidityEventsCapture>

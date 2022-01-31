@@ -5,6 +5,9 @@ A very simple validation addon using a custom modifier. This makes adding
 custom validations to form elements as simple as adding a modifier to the field
 along with your own helper or validation function.
 
+[Demo](https://sukima.github.io/ember-validity-modifier)
+
+
 Compatibility
 ------------------------------------------------------------------------------
 
@@ -71,14 +74,34 @@ By default validation will happen on `change`, `input`, and `blur`. Comma separa
 <input {{validity (validate-foobar) on="change,input"}}>
 ```
 
+#### Example adding to non form fields (bubbling)
+
+In cases where we don't have easy access to the form field itself we can also add it to a parent element. This might be the case when adding a modifier that gets applied by another component via its `...attributes`.
+
+```hbs
+<div {{validity (validate-foobar)}}>
+  <label for="example">Example</label>
+  <input id="example">
+</div>
+```
+
 #### Example validation on form submit
 
 ```hbs
-<form ...attributes novalidate {{on "submit" this.validateAndSubmit}}>
+<form
+  ...attributes
+  {{verify-form-validity submit=this.handleSubmit reportValidity=true}}
+>
   <label for="firstName">First name</label>
   <input type="text" name="firstName" id="firstName" required {{validity}}>
   <label for="lastName">Last name</label>
-  <input type="text" name="lastName" id="lastName" required {{validity (validate-not-match "firstName")}}>
+  <input
+    type="text"
+    name="lastName"
+    id="lastName"
+    required
+    {{validity (validate-not-match "firstName")}}
+  >
   <button type="submit">Submit form</button>
 </form>
 ```
@@ -89,35 +112,49 @@ import { validate } from 'ember-validity-modifier';
 
 export default class MyForm extends Component {
   @action
-  async validateAndSubmit(event) {
-    let { target: form } = event;
-    event.preventDefault();
-    await validate(...form.elements);
-    if (form.reportValidity()) {
-      console.log('Fake submit action', Object.fromEntries(new FormData(form)));
-    }
+  handleSubmit({ target: form }) {
+    console.log('Fake submit action', Object.fromEntries(new FormData(form)));
   }
 }
 ```
 
-#### Example with `validator-update` event
+#### Example with `validateImmediately` argument
 
-To validate the form state on initial render and any time its dependent arguments change, add the `'validator-update'` event to the list of events passed in via the `on` argument.
+To validate the form state on initial render add `validateImmediately=true`.
 
 ```hbs
-  <input {{validity (fn this.matchTo this.match) on="change,validator-update"}}>
+  <input {{validity
+    (fn this.matchTo this.match)
+    on="change"
+    validateImmediately=true
+  }}>
 ```
 
-```js
-export default MyComponent extends Component {
-  @action
-  matchTo(match, { value }) {
-    return value === match ? [] : ['Must match exactly'];
-  }
-}
+#### Example with `validateTracked` argument
+
+To validate the form state when  initial render and any time **one** of its dependent arguments change, add the `'validateTracked'` argument with the dependent properties.
+
+Because the validator argument is a function it is possible to not exercise the tracked properties and thus miss out on validations when those tracked properties change. This is the case of the `fn` helper which lazy executes thus doesn't trigger Ember's auto-tracking if it isn't ran first.
+
+To compensate we can use `validateTracked` to inform the modifier that it needs to run the validations when these properties change.
+
+```hbs
+  <input {{validity
+    (fn this.matchTo this.match)
+    on="change"
+    validateTracked=this.match
+  }}>
 ```
 
-**Tip:** For Glimmer's tracking to work properly, make sure you reference each tracked property you intend to validate against unconditionally in your validation method.
+To validate the form state any time **any** of its dependent arguments change, add the `validateTracked` argument using the `array` helper and a list of dependent properties.
+
+```hbs
+  <input {{validity
+    (fn this.matchTo this.match1 this.match2)
+    on="change"
+    validateTracked=(array this.match1 this.macth2)
+  }}>
+```
 
 #### Example with select
 
@@ -175,9 +212,11 @@ export default MyComponent extends Component {
 
   @action
   setValidationMessage(event) {
+    let { detail: errors } = event.target;
     let { validationMessage } = event.target;
     this.didValidate = true;
     this.validationMessage = validationMessage;
+    console.log('All Errors: %s', errors.join(', '));
   }
 }
 ```
@@ -194,6 +233,24 @@ export default MyComponent extends Component {
 [data-validated]:invalid { … }
 ```
 
+
+How this works
+------------------------------------------------------------------------------
+
+The blog post
+[Managing validity in forms](https://tritarget.org/#Managing%20validity%20in%20forms)
+takes a dive into a simple native (vanilla) implementation of this idea. In the
+post it describes the idea that validations can be managed through DOM events.
+By attaching the validation functions to an event handler they can easily manage
+the native custom validity of the element.
+
+When a validate event is dispatched (by default the events are `validate`,
+`input`, `change`, and `blur`). Each validator function registered will be
+evaluated, the results will be consolidated, and the element's custom validity
+is set, finally a `validated` event is dispatched to announce that the process
+is complete (in case of asynchronous validations).
+
+![Sequence diagram of the validation events](http://www.plantuml.com/plantuml/svg/XP7FIiH03CRlVOgmb-fXVO0Yig22byMR5_KGccY3xRHqqeei1P_61_D9REje7LBPqv0_to_vCZkls6fNbKaplf9BWqxXwdOVnNTO2ec-xMkI9-4MqCEc2i76jgBoTSzERz1H6ThJFbJI1yTJ4OgvkgwlMp-hyeBp5-X_a-l3wFzfPCUDxc1xOKrbiEm8ioOnFRFEEammL-bHURrgamigcCq0Nr7qZrN3d7AhfFDjJEAsdNg9LmYJ-o2me0mywsNdjQv-d9-atp5Kx3q-yrbwUWH1uXlKl5YkIU6SyKPM7FsC-TOC3eVQHTJFzuzXYEzaTF6s5agiAEK83sVBuDvOVeJ1x6xcxDXHLvLV)
 
 Contributing
 ------------------------------------------------------------------------------

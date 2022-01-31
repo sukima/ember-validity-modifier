@@ -1,42 +1,23 @@
+import AutoTrackingExerciser from '../-private/auto-tracking-exerciser';
+import ValidityWalker from '../-private/validity-walker';
 import { modifier } from 'ember-modifier';
-import { validate, registerValidatable } from 'ember-validity-modifier/utils/validate';
+import { setValidity, validate } from '../-private/validity';
+import { waitForPromise as waiterCallback } from '@ember/test-waiters';
 
-const commaSeperate = s => s.split(',').map(i => i.trim()).filter(Boolean);
-const reduceValidators = async (validators, ...args) => {
-  let errors = await Promise.all(validators.map(validator => validator(...args)));
-  return errors.reduce((a, b) => [...a, ...b], []);
-};
-
-export default modifier(function validity(
+export default modifier(function (
   element,
   validators,
-  { on: eventNames = 'change,input,blur' }
-) {
-  let autoValidationEvents = commaSeperate(eventNames);
-  let autoValidationHandler = () => validate(element);
-  let validateHandler = async () => {
-    let [error = ''] = await reduceValidators(validators, element);
-    element.checkValidity();
-    element.setCustomValidity(error);
-    element.dispatchEvent(new CustomEvent('validated'));
-  };
-  element.addEventListener('validate', validateHandler);
-  let watchForValidatorUpdates = false;
-  autoValidationEvents.forEach(eventName => {
-    if (eventName === 'validator-update') {
-      watchForValidatorUpdates = true;
-      return;
-    }
-    element.addEventListener(eventName, autoValidationHandler);
-  });
-  registerValidatable(element);
-  if (watchForValidatorUpdates) {
-    validate(element);
+  {
+    validateTracked = [],
+    validateImmediately = false,
+    on = 'change,input,blur'
   }
-  return () => {
-    element.removeEventListener('validate', validateHandler);
-    autoValidationEvents.forEach(eventName => {
-      element.removeEventListener(eventName, autoValidationHandler);
-    });
-  };
+) {
+  let teardown = setValidity(element, validators, { on, waiterCallback });
+
+  AutoTrackingExerciser.from(validateTracked, element)
+    .runImmediatlyWhen(validateImmediately)
+    .exercise(() => validate(...ValidityWalker.for(element)));
+
+  return teardown;
 });

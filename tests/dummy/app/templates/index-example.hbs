@@ -1,0 +1,96 @@
+<ValidityEventsCapture as |bucketManager|>
+  <article>
+    <section class="debug-section">
+      <h1>Debug events</h1>
+      {{#let bucketManager.buckets as |buckets|}}
+        <EventSequenceVisualizer @bucket={{buckets.name}} />
+        <EventSequenceVisualizer @bucket={{buckets.phone}} />
+        <EventSequenceVisualizer @bucket={{buckets.email}} />
+        <EventSequenceVisualizer @bucket={{buckets.contactMethod}} />
+        <EventSequenceVisualizer @bucket={{buckets.password}} />
+        <EventSequenceVisualizer @bucket={{buckets.confirm}} />
+      {{/let}}
+      <button type="button" {{on "click" bucketManager.reset}}>Reset captures</button>
+    </section>
+
+    <section>
+      <h1>Create a new user</h1>
+      {{! BEGIN-SNIPPET index-example-form }}
+      <form
+        id="userForm"
+        {{verify-form-validity submit=this.handleFormSubmit}}
+        {{on "validated" this.assignValidationMessages}}
+      >
+        <div class="full-width text-right"><sup class="required">*</sup> Required</div>
+
+        <label for="userForm-name">Name<sup class="required">*</sup></label>
+        <input id="userForm-name" name="name" required {{validity}}>
+        <span class="validation-message">{{this.validationMessages.name}}</span>
+
+        <label for="userForm-phone">Phone</label>
+        <input id="userForm-phone" name="phone" type="tel" {{validity}}>
+        <span class="validation-message">{{this.validationMessages.phone}}</span>
+
+        <label for="userForm-email">Email<sup class="required">*</sup></label>
+        <input id="userForm-email" name="email" type="email" required {{validity}}>
+        <span class="validation-message">{{this.validationMessages.email}}</span>
+
+        <label for="userForm-contactMethod">Contact method</label>
+        <select id="userForm-contactMethod" name="contactMethod" required {{validity}}>
+          <option value="">—Please pick one—</option>
+          <option value="phone">Phone</option>
+          <option value="email">Email</option>
+          <option value="no-contact">Do not contact me</option>
+        </select>
+        <span class="validation-message">{{this.validationMessages.contactMethod}}</span>
+
+        {{#let (change-tracker) as |tracker|}}
+          <label for="userForm-password">Password<sup class="required">*</sup></label>
+          <input
+            id="userForm-password"
+            name="password"
+            type="password"
+            required
+            {{validity (validate-password)}}
+            {{on "input" tracker.dirty}}
+          >
+          <span class="validation-message">{{this.validationMessages.password}}</span>
+
+          <label for="userForm-confirm">Confirm password<sup class="required">*</sup></label>
+          <input
+            id="userForm-confirm"
+            name="confirm"
+            type="password"
+            required
+            {{validity
+              (validate-confirmation "userForm-password")
+              validateTracked=tracker.count
+            }}
+          >
+          <span class="validation-message">{{this.validationMessages.confirm}}</span>
+        {{/let}}
+
+        <button type="submit">Create</button>
+      </form>
+      {{! END-SNIPPET }}
+    </section>
+
+    <section>
+      <h1>Valid submissions</h1>
+      <ul id="userList">
+        {{#each @model.users as |user|}}
+          <li>"{{user.name}}" &lt;{{user.email}}&gt; &mdash; {{user.phone}}</li>
+        {{/each}}
+      </ul>
+    </section>
+  </article>
+
+  <article>
+    <section>
+      <h1>Example code</h1>
+      {{#let (get-code-snippet "index-example-form.hbs") as |snippet|}}
+        <pre><code {{highlight lang=snippet.language}}>{{snippet.source}}</code></pre>
+      {{/let}}
+    </section>
+  </article>
+</ValidityEventsCapture>

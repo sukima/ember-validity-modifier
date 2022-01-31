@@ -1,0 +1,12 @@
+<div
+  class="sequence-diagram placeholder"
+  {{style-adjust "--sequence-diagram-height" this.loadedHeight}}
+>
+  <img
+    class="picture {{if this.loaded 'loaded'}}"
+    ...attributes
+    src={{this.href}}
+    alt={{@altText}}
+    {{on "load" this.onLoaded}}
+  >
+</div>

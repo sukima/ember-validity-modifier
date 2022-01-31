@@ -5,6 +5,9 @@ A very simple validation addon using a custom modifier. This makes adding
 custom validations to form elements as simple as adding a modifier to the field
 along with your own helper or validation function.
 
+[Demo](https://sukima.github.io/ember-validity-modifier)
+
+
 Compatibility
 ------------------------------------------------------------------------------
 

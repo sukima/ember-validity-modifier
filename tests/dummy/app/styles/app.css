@@ -97,7 +97,7 @@ form > .full-width {
   width: 100%;
   border: thin dotted transparent;
   border-radius: 0;
-  padding 1rem 1.5rem;
+  padding: 1rem 1.5rem;
 }
 
 .event-sequence-visualizer .expand-toggle:focus,

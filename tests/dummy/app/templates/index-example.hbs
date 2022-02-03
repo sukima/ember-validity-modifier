@@ -16,62 +16,74 @@
     <section>
       <h1>Create a new user</h1>
       {{! BEGIN-SNIPPET index-example-form }}
-      <form
-        id="userForm"
-        {{verify-form-validity submit=this.handleFormSubmit}}
-        {{on "validated" this.assignValidationMessages}}
-      >
-        <div class="full-width text-right"><sup class="required">*</sup> Required</div>
+      {{#let (form-errors) as |errors|}}
+        <form
+          id="userForm"
+          {{verify-form-validity submit=this.handleFormSubmit}}
+          {{on "validated" this.setDirtyState}}
+          {{on "validated" errors.update}}
+          {{on "reset" errors.reset}}
+        >
+          <div class="full-width text-right"><sup class="required">*</sup> Required</div>
 
-        <label for="userForm-name">Name<sup class="required">*</sup></label>
-        <input id="userForm-name" name="name" required {{validity}}>
-        <span class="validation-message">{{this.validationMessages.name}}</span>
+          <label for="userForm-name">Name<sup class="required">*</sup></label>
+          <input id="userForm-name" name="name" required {{validity}}>
+          <span class="validation-message">{{errors.message.name}}</span>
 
-        <label for="userForm-phone">Phone</label>
-        <input id="userForm-phone" name="phone" type="tel" {{validity}}>
-        <span class="validation-message">{{this.validationMessages.phone}}</span>
+          <label for="userForm-phone">Phone</label>
+          <input id="userForm-phone" name="phone" type="tel" {{validity}}>
+          <span class="validation-message">{{errors.message.phone}}</span>
 
-        <label for="userForm-email">Email<sup class="required">*</sup></label>
-        <input id="userForm-email" name="email" type="email" required {{validity}}>
-        <span class="validation-message">{{this.validationMessages.email}}</span>
+          <label for="userForm-email">Email<sup class="required">*</sup></label>
+          <input id="userForm-email" name="email" type="email" required {{validity}}>
+          <span class="validation-message">{{errors.message.email}}</span>
 
-        <label for="userForm-contactMethod">Contact method</label>
-        <select id="userForm-contactMethod" name="contactMethod" required {{validity}}>
-          <option value="">—Please pick one—</option>
-          <option value="phone">Phone</option>
-          <option value="email">Email</option>
-          <option value="no-contact">Do not contact me</option>
-        </select>
-        <span class="validation-message">{{this.validationMessages.contactMethod}}</span>
+          <label for="userForm-contactMethod">Contact method</label>
+          <select id="userForm-contactMethod" name="contactMethod" required {{validity}}>
+            <option value="">—Please pick one—</option>
+            <option value="phone">Phone</option>
+            <option value="email">Email</option>
+            <option value="no-contact">Do not contact me</option>
+          </select>
+          <span class="validation-message">{{errors.message.contactMethod}}</span>
 
-        {{#let (change-tracker) as |tracker|}}
-          <label for="userForm-password">Password<sup class="required">*</sup></label>
-          <input
-            id="userForm-password"
-            name="password"
-            type="password"
-            required
-            {{validity (validate-password)}}
-            {{on "input" tracker.dirty}}
-          >
-          <span class="validation-message">{{this.validationMessages.password}}</span>
+          {{#let (change-tracker) as |tracker|}}
+            <label for="userForm-password">Password<sup class="required">*</sup></label>
+            <input
+              id="userForm-password"
+              name="password"
+              type="password"
+              required
+              {{validity (validate-password)}}
+              {{on "input" tracker.dirty}}
+            >
+            <span class="validation-message">
+              <ul>
+                {{#each errors.for.password as |messages|}}
+                  <li>{{messages}}</li>
+                {{else}}
+                  <li></li>
+                {{/each}}
+              </ul>
+            </span>
 
-          <label for="userForm-confirm">Confirm password<sup class="required">*</sup></label>
-          <input
-            id="userForm-confirm"
-            name="confirm"
-            type="password"
-            required
-            {{validity
-              (validate-confirmation "userForm-password")
-              validateTracked=tracker.count
-            }}
-          >
-          <span class="validation-message">{{this.validationMessages.confirm}}</span>
-        {{/let}}
+            <label for="userForm-confirm">Confirm password<sup class="required">*</sup></label>
+            <input
+              id="userForm-confirm"
+              name="confirm"
+              type="password"
+              required
+              {{validity
+                (validate-confirmation "userForm-password")
+                validateTracked=tracker.count
+              }}
+            >
+            <span class="validation-message">{{errors.message.confirm}}</span>
+          {{/let}}
 
-        <button type="submit">Create</button>
-      </form>
+          <button type="submit">Create</button>
+        </form>
+      {{/let}}
       {{! END-SNIPPET }}
     </section>
 

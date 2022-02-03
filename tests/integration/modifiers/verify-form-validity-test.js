@@ -4,6 +4,10 @@ import { module, test } from 'qunit';
 import { find, render } from '@ember/test-helpers';
 import { setupRenderingTest } from 'ember-qunit';
 
+function requestSubmit(form) {
+  form.querySelector('[type=submit]').click();
+}
+
 module('Integration | Modifier | verify-form-validity', function (hooks) {
   setupRenderingTest(hooks);
 
@@ -17,12 +21,14 @@ module('Integration | Modifier | verify-form-validity', function (hooks) {
         id="test-form"
         {{on "submit" this.preventInfinateRefreshLoop}}
         {{verify-form-validity}}
-      ></form>
+      >
+        <button type="submit"></button>
+      </form>
     `);
     let form = find('#test-form');
     let submitStub = sinon.stub(form, 'submit');
     let waitForSubmit = new Promise(done => submitStub.callsFake(done));
-    form.requestSubmit();
+    requestSubmit(form);
     await waitForSubmit;
     sinon.assert.called(submitStub);
   });
@@ -50,10 +56,12 @@ module('Integration | Modifier | verify-form-validity', function (hooks) {
         <form
           id="test-form"
           {{on "submit" this.preventInfinateRefreshLoop}}
-        ></form>
+        >
+          <button type="submit"></button>
+        </form>
       </div>
     `);
-    find('#test-form').requestSubmit();
+    requestSubmit(find('#test-form'));
     await waitForSubmit;
     sinon.assert.called(this.submitStub);
   });
@@ -69,9 +77,10 @@ module('Integration | Modifier | verify-form-validity', function (hooks) {
         {{verify-form-validity submit=this.submitStub}}
       >
         <input {{validity this.testValidator on=""}}>
+        <button type="submit"></button>
       </form>
     `);
-    find('#test-form').requestSubmit();
+    requestSubmit(find('#test-form'));
     await waitForSubmit;
     sinon.assert.called(this.submitStub);
     sinon.assert.called(this.testValidator);
@@ -87,9 +96,10 @@ module('Integration | Modifier | verify-form-validity', function (hooks) {
         {{verify-form-validity submit=this.submitStub}}
       >
         <input {{validity this.testValidator on=""}}>
+        <button type="submit"></button>
       </form>
     `);
-    find('#test-form').requestSubmit();
+    requestSubmit(find('#test-form'));
     await new Promise(r => setTimeout(r, 10));
     sinon.assert.called(this.testValidator);
     sinon.assert.notCalled(this.submitStub);

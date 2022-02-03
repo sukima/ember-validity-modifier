@@ -77,7 +77,16 @@ form > .full-width {
   color: salmon;
 }
 
-.validation-message:empty {
+.validation-message ul {
+  margin: 0;
+}
+
+.validation-message li {
+  list-style: none;
+}
+
+.validation-message:empty,
+.validation-message li:empty {
   margin-bottom: 1.3rem;
 }
 
@@ -97,7 +106,6 @@ form > .full-width {
   width: 100%;
   border: thin dotted transparent;
   border-radius: 0;
-  padding: 1rem 1.5rem;
 }
 
 .event-sequence-visualizer .expand-toggle:focus,

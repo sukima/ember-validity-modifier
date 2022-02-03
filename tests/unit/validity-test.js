@@ -236,6 +236,7 @@ module('validity.js', function(hooks) {
         <div id="test-form-wrapper">
           <form id="test-form">
             <input type="text" name="foo" id="test-input">
+            <button type="submit"><button>
           </form>
         </div>
       `;
@@ -243,6 +244,7 @@ module('validity.js', function(hooks) {
       this.wrapper = document.getElementById('test-form-wrapper');
       this.subject = document.getElementById('test-form');
       this.subject.addEventListener('submit', event => event.preventDefault());
+      this.requestSubmit = () => this.subject.querySelector('[type=submit]').click();
     });
 
     test('calls native submit() by default', function(assert) {
@@ -254,7 +256,7 @@ module('validity.js', function(hooks) {
         done();
       };
       verifyFormValidity(this.subject);
-      this.subject.requestSubmit();
+      this.requestSubmit();
     });
 
     test('adds novalidate attribute', function(assert) {
@@ -270,7 +272,7 @@ module('validity.js', function(hooks) {
       };
       assert.expect(1);
       verifyFormValidity(this.wrapper, { submit });
-      this.subject.requestSubmit();
+      this.requestSubmit();
     });
 
     test('called submit callback with all fields valid', function(assert) {
@@ -282,7 +284,7 @@ module('validity.js', function(hooks) {
       assert.expect(1);
       verifyFormValidity(this.subject, { submit });
       setValidity(this.input, () => [], { on: '' });
-      this.subject.requestSubmit();
+      this.requestSubmit();
     });
 
     test('does not call submit callback with a field invalid', async function(assert) {
@@ -292,7 +294,7 @@ module('validity.js', function(hooks) {
       assert.expect(0);
       verifyFormValidity(this.subject, { submit });
       setValidity(this.input, () => ['test-message'], { on: '' });
-      this.subject.requestSubmit();
+      this.requestSubmit();
       await new Promise(r => setTimeout(r, 10));
     });
   });

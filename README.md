@@ -197,29 +197,24 @@ export default helper(function validateChangeset([changeset, prop]) {
 #### Example rendering validation messages
 
 ```hbs
-<input
-  data-validated={{this.didValidate}}
-  {{on "validated" this.setValidationMessage}}
-  {{validity (validate-foobar)}}
->
-<span>{{this.validationMessage}}</span>
+{{#let (form-errors) as |errors|}}
+  <input
+    name="foobar"
+    {{on "validated" errors.update}}
+    {{validity (validate-foobar)}}
+  >
+  <span>{{errors.message.foobar}}</span>
+{{/let}}
 ```
 
-```js
-export default MyComponent extends Component {
-  @tracked didValidate;
-  @tracked validationMessage;
+form-error exposes the following:
 
-  @action
-  setValidationMessage(event) {
-    let { detail: errors } = event.target;
-    let { validationMessage } = event.target;
-    this.didValidate = true;
-    this.validationMessage = validationMessage;
-    console.log('All Errors: %s', errors.join(', '));
-  }
-}
-```
+* `update` — action to process a validated event
+* `set` — action that can set specific fields
+* `for.<name>` — the errors as an array
+* `native.<name>` — any native errors as an array
+* `custom.<name>` — any custom errors as an array
+* `message.<name>` — the `validationMessage` from the DOM element
 
 #### Example CSS
 
@@ -228,9 +223,9 @@ export default MyComponent extends Component {
 :valid { … }
 :invalid { … }
 
-/* Not on first render */
-[data-validated]:valid { … }
-[data-validated]:invalid { … }
+/* Not on first render, use the validated event to set dataset.validated */
+[data-validited]:valid { … }
+[data-validited]:invalid { … }
 ```
 
 

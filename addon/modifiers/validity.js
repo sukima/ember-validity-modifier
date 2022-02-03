@@ -13,7 +13,8 @@ export default modifier(function (
     on = 'change,input,blur'
   }
 ) {
-  let teardown = setValidity(element, validators, { on, waiterCallback });
+  // Ember passes in the params as a Proxy. Use Array.from to convert
+  let teardown = setValidity(element, Array.from(validators), { on, waiterCallback });
 
   AutoTrackingExerciser.from(validateTracked, element)
     .runImmediatlyWhen(validateImmediately)

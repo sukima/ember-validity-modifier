@@ -17,6 +17,14 @@ export class ValiditySequence {
     return this.validatedEvent.detail.errors;
   }
 
+  get nativeErrors() {
+    return this.validatedEvent.detail.nativeErrors;
+  }
+
+  get customErrors() {
+    return this.validatedEvent.detail.customErrors;
+  }
+
   static from([validateEvent, validatedEvent]) {
     return new ValiditySequence({ validateEvent, validatedEvent });
   }

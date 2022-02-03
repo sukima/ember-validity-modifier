@@ -1,19 +1,11 @@
 import Controller from '@ember/controller';
 import User from 'dummy/models/user';
 import { action } from '@ember/object';
-import { tracked } from '@glimmer/tracking';
-import { next } from '@ember/runloop';
 
 export default class IndexExampleController extends Controller {
-  @tracked validationMessages = {};
-
   @action
-  assignValidationMessages({ target }) {
+  setDirtyState({ target }) {
     target.dataset.state = 'dirty';
-    this.validationMessages = {
-      ...this.validationMessages,
-      [target.name]: target.validationMessage
-    };
   }
 
   @action
@@ -28,11 +20,10 @@ export default class IndexExampleController extends Controller {
 
   resetForm(form) {
     let elements = [...form.elements];
-    form.reset();
     elements[0].focus();
-    next(() => {
+    requestAnimationFrame(() => {
+      form.reset();
       elements.forEach(e => e.dataset.state = 'clean');
-      this.validationMessages = {};
     });
   }
 }

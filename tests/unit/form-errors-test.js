@@ -30,6 +30,21 @@ module('Unit | Helper | FormErrors', function (hooks) {
     assert.deepEqual(subject.message.foo, 'test-validation-message');
   });
 
+  test('can update with custom name', function (assert) {
+    let subject = new FormErrors();
+    let detail = {
+      errors: ['test-errors'],
+      customErrors: ['test-custom-errors'],
+      nativeErrors: ['test-native-errors'],
+    };
+    let target = { name: 'bar', validationMessage: 'test-validation-message' };
+    subject.from('foo', { detail, target });
+    assert.deepEqual(subject.for.foo, ['test-errors']);
+    assert.deepEqual(subject.native.foo, ['test-native-errors']);
+    assert.deepEqual(subject.custom.foo, ['test-custom-errors']);
+    assert.deepEqual(subject.message.foo, 'test-validation-message');
+  });
+
   test('can set sepecific errors', function (assert) {
     let subject = new FormErrors();
     subject.set('foo', ['test-foo-error']);

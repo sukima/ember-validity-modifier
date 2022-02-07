@@ -64,14 +64,19 @@ export class FormErrors {
 
     this._errors = new Map([...this._errors, [name, errors]]);
   }
-
+  
   @action
-  update({ detail, target: { name, validationMessage } }) {
+  from(name, { detail, target: { validationMessage } }) {
     let errors = detail
       ? { ...detail, validationMessage }
       : errorsFromValidityMessage(validationMessage);
-
     this.set(name, errors);
+  }
+
+  @action
+  update(event) {
+    let { name } = event.target;
+    this.from(name, event);
   }
 
   @action

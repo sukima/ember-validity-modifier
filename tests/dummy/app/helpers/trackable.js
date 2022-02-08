@@ -1,4 +1,4 @@
-import Helper from '@ember/component/helper';
+import { helper } from '@ember/component/helper';
 import { tracked } from '@glimmer/tracking';
 
 class Trackable {
@@ -15,4 +15,4 @@ class Trackable {
   }
 }
 
-export default Helper.helper(([initialValue]) => new Trackable(initialValue));
+export default helper(([value]) => new Trackable(value));

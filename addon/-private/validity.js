@@ -1,5 +1,5 @@
 /*****************************************/
-/* Version 1.0.0                         */
+/* Version 1.0.1                         */
 /* License MIT                           */
 /* Copyright (C) 2022 Devin Weaver       */
 /* https://tritarget.org/cdn/validity.js */
@@ -99,7 +99,7 @@ export function validate(...elements) {
 export function setValidity(
   element,
   validators = [],
-  { on = 'change,input,blur', waiterCallback = noop } = {}
+  { on = 'change,input,blur,focusout', waiterCallback = noop } = {}
 ) {
   let eventsManager = new EventsManager(element, eventsStore);
   let eventNames = commaSeperate(on);

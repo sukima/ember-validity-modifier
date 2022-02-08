@@ -47,7 +47,7 @@
           </select>
           <span class="validation-message">{{errors.message.contactMethod}}</span>
 
-          {{#let (change-tracker) as |tracker|}}
+          {{#let (counter) as |dirtyCount|}}
             <label for="userForm-password">Password<sup class="required">*</sup></label>
             <input
               id="userForm-password"
@@ -55,7 +55,7 @@
               type="password"
               required
               {{validity (validate-password)}}
-              {{on "input" tracker.dirty}}
+              {{on "input" dirtyCount.inc}}
             >
             <span class="validation-message">
               <ul>
@@ -75,7 +75,7 @@
               required
               {{validity
                 (validate-confirmation "userForm-password")
-                validateTracked=tracker.count
+                validateTracked=dirtyCount.value
               }}
             >
             <span class="validation-message">{{errors.message.confirm}}</span>

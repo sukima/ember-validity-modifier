@@ -1,5 +1,5 @@
 /****************************************************/
-/* Version 1.0.0                                    */
+/* Version 1.0.2                                    */
 /* License MIT                                      */
 /* Copyright (C) 2022 Devin Weaver                  */
 /* https://tritarget.org/cdn/tests/validity-test.js */
@@ -140,6 +140,23 @@ module('validity.js', function(hooks) {
       }));
       await flushPromises();
       assert.equal(eventCalls, 3);
+    });
+
+    test('dispatches "validated" event when target is non-form element', async function(assert) {
+      this.fixture.innerHTML = `<div id="test-subject"></div>`;
+      let eventDetail = null;
+      let subject = document.getElementById('test-subject');
+      document.addEventListener('validated', ({ detail }) => (eventDetail = detail));
+      await new Promise(resolve => {
+        setValidity(subject, () => (resolve(), ['test-invalid']), { on: '' });
+        subject.dispatchEvent(new CustomEvent('validate'));
+      });
+      await flushPromises();
+      assert.deepEqual(eventDetail, {
+        customErrors: ['test-invalid'],
+        nativeErrors: [],
+        errors: ['test-invalid'],
+      });
     });
 
     test('flattens multiple events in same validation execution', async function(assert) {

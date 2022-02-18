@@ -1,5 +1,5 @@
 /*****************************************/
-/* Version 1.0.1                         */
+/* Version 1.0.2                         */
 /* License MIT                           */
 /* Copyright (C) 2022 Devin Weaver       */
 /* https://tritarget.org/cdn/validity.js */
@@ -110,12 +110,13 @@ export function setValidity(
     latch.bump();
     lastTask = lastTask.then(async () => {
       if (!latch.check()) { return; }
-      target.setCustomValidity('');
-      let nativeErrors = target.checkValidity() ? [] : [target.validationMessage];
+      target.setCustomValidity?.('');
+      target.checkValidity?.();
+      let nativeErrors = [target.validationMessage].filter(Boolean);
       let customErrors = await reduceValidators(validatorsStore.get(element), target);
       let errors = [...customErrors, ...nativeErrors];
       let detail = { errors, customErrors, nativeErrors };
-      target.setCustomValidity(customErrors[0] ?? '');
+      target.setCustomValidity?.(customErrors[0] ?? '');
       target.dispatchEvent(
         new CustomEvent('validated', { bubbles: true, detail })
       );

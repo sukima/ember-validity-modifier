@@ -21,4 +21,4 @@ export default modifier(function (
     .exercise(() => validate(...ValidityWalker.for(element)));
 
   return teardown;
-});
+}, { eager: false });

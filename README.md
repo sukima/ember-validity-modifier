@@ -1,6 +1,4 @@
-ember-validity-modifier
-==============================================================================
-
+# ember-validity-modifier
 A very simple validation addon using a custom modifier. This makes adding
 custom validations to form elements as simple as adding a modifier to the field
 along with your own helper or validation function.
@@ -8,25 +6,19 @@ along with your own helper or validation function.
 [Demo](https://sukima.github.io/ember-validity-modifier)
 
 
-Compatibility
-------------------------------------------------------------------------------
-
+## Compatibility
 * Ember.js v3.16 or above
 * Ember CLI v2.13 or above
 * Node.js v10 or above
 
 
-Installation
-------------------------------------------------------------------------------
-
+## Installation
 ```
 ember install ember-validity-modifier
 ```
 
 
-Usage
-------------------------------------------------------------------------------
-
+## Usage
 #### Example using a component action
 
 ```hbs
@@ -228,10 +220,7 @@ form-error exposes the following:
 [data-validited]:invalid { … }
 ```
 
-
-How this works
-------------------------------------------------------------------------------
-
+## How this works
 The blog post
 [Managing validity in forms](https://tritarget.org/#Managing%20validity%20in%20forms)
 takes a dive into a simple native (vanilla) implementation of this idea. In the
@@ -247,13 +236,9 @@ is complete (in case of asynchronous validations).
 
 ![Sequence diagram of the validation events](http://www.plantuml.com/plantuml/svg/XP7FIiH03CRlVOgmb-fXVO0Yig22byMR5_KGccY3xRHqqeei1P_61_D9REje7LBPqv0_to_vCZkls6fNbKaplf9BWqxXwdOVnNTO2ec-xMkI9-4MqCEc2i76jgBoTSzERz1H6ThJFbJI1yTJ4OgvkgwlMp-hyeBp5-X_a-l3wFzfPCUDxc1xOKrbiEm8ioOnFRFEEammL-bHURrgamigcCq0Nr7qZrN3d7AhfFDjJEAsdNg9LmYJ-o2me0mywsNdjQv-d9-atp5Kx3q-yrbwUWH1uXlKl5YkIU6SyKPM7FsC-TOC3eVQHTJFzuzXYEzaTF6s5agiAEK83sVBuDvOVeJ1x6xcxDXHLvLV)
 
-Contributing
-------------------------------------------------------------------------------
-
+## Contributing
 See the [Contributing](CONTRIBUTING.md) guide for details.
 
 
-License
-------------------------------------------------------------------------------
-
+## License
 This project is licensed under the [MIT License](LICENSE.md).

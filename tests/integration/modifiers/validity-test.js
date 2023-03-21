@@ -83,7 +83,7 @@ module('Integration | Modifier | validity', function (hooks) {
     await validate(subject);
     sinon.assert.calledOnce(this.testValidator);
     assert.notOk(subject.validity.valid, 'expected validity to be invalid');
-    assert.equal(subject.validationMessage, 'test-invalid');
+    assert.strictEqual(subject.validationMessage, 'test-invalid');
   });
 
   test('multiple validators sets validity to false', async function (assert) {
@@ -104,7 +104,7 @@ module('Integration | Modifier | validity', function (hooks) {
     sinon.assert.calledOnce(this.testValidator2);
     sinon.assert.calledOnce(this.testValidator3);
     assert.notOk(subject.validity.valid, 'expected validity to be invalid');
-    assert.equal(subject.validationMessage, 'test-invalid');
+    assert.strictEqual(subject.validationMessage, 'test-invalid');
   });
 
   test('single validator sets validity message to first failed error', async function (assert) {
@@ -116,7 +116,7 @@ module('Integration | Modifier | validity', function (hooks) {
     await validate(subject);
     sinon.assert.calledOnce(this.testValidator);
     assert.notOk(subject.validity.valid, 'expected validity to be invalid');
-    assert.equal(subject.validationMessage, 'test-invalid1');
+    assert.strictEqual(subject.validationMessage, 'test-invalid1');
   });
 
   test('asynchonous validator can set validity to true', async function (assert) {
@@ -136,7 +136,7 @@ module('Integration | Modifier | validity', function (hooks) {
     await validate(subject);
     sinon.assert.calledOnce(this.testValidator);
     assert.notOk(subject.validity.valid, 'expected validity to be invalid');
-    assert.equal(subject.validationMessage, 'test-invalid');
+    assert.strictEqual(subject.validationMessage, 'test-invalid');
   });
 
   test('flattens multiple events in same validation execution', async function () {

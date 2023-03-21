@@ -41,6 +41,8 @@ module('validity.js', function (hooks) {
     });
 
     test('sets custom validity', async function (assert) {
+      assert.expect(3 * this.subjects.length);
+
       await Promise.all(
         this.subjects.map((subject) => {
           return new Promise((resolve) => {
@@ -51,7 +53,7 @@ module('validity.js', function (hooks) {
       );
       await flushPromises();
       for (let input of this.subjects) {
-        assert.equal(input.validationMessage, 'test-message');
+        assert.strictEqual(input.validationMessage, 'test-message');
         assert.false(input.validity.valid);
         assert.true(input.validity.customError);
       }
@@ -73,6 +75,8 @@ module('validity.js', function (hooks) {
     });
 
     test('validates on custom events', async function (assert) {
+      assert.expect(3 * this.subjects.length);
+
       await Promise.all(
         this.subjects.map((subject) => {
           return new Promise((resolve) => {
@@ -85,7 +89,7 @@ module('validity.js', function (hooks) {
       );
       await flushPromises();
       for (let input of this.subjects) {
-        assert.equal(input.validationMessage, 'test-message');
+        assert.strictEqual(input.validationMessage, 'test-message');
         assert.false(input.validity.valid);
         assert.true(input.validity.customError);
       }
@@ -124,14 +128,14 @@ module('validity.js', function (hooks) {
         subject.dispatchEvent(new CustomEvent('validate'));
       });
       await flushPromises();
-      assert.equal(eventCalls.length, 1);
+      assert.strictEqual(eventCalls.length, 1);
       let { errors, customErrors, nativeErrors } = eventCalls[0].detail;
-      assert.equal(errors.length, 4);
-      assert.equal(customErrors.length, 3);
-      assert.equal(nativeErrors.length, 1);
+      assert.strictEqual(errors.length, 4);
+      assert.strictEqual(customErrors.length, 3);
+      assert.strictEqual(nativeErrors.length, 1);
       assert.deepEqual(errors.slice(0, 3), ['test1', 'test2', 'test3']);
       assert.deepEqual(customErrors, ['test1', 'test2', 'test3']);
-      assert.equal(typeof nativeErrors[0], 'string');
+      assert.strictEqual(typeof nativeErrors[0], 'string');
     });
 
     test('bubbles the "validated" event', async function (assert) {
@@ -146,7 +150,7 @@ module('validity.js', function (hooks) {
         })
       );
       await flushPromises();
-      assert.equal(eventCalls, 3);
+      assert.strictEqual(eventCalls, 3);
     });
 
     test('dispatches "validated" event when target is non-form element', async function (assert) {
@@ -181,10 +185,12 @@ module('validity.js', function (hooks) {
         subject.dispatchEvent(new CustomEvent('validate'));
       });
       await flushPromises();
-      assert.equal(eventCalls, 1);
+      assert.strictEqual(eventCalls, 1);
     });
 
     test('handles async tasks', async function (assert) {
+      assert.expect(3 * this.subjects.length);
+
       await Promise.all(
         this.subjects.map((subject) => {
           return new Promise((resolve) => {
@@ -200,7 +206,7 @@ module('validity.js', function (hooks) {
       );
       await flushPromises();
       for (let input of this.subjects) {
-        assert.equal(input.validationMessage, 'test-message');
+        assert.strictEqual(input.validationMessage, 'test-message');
         assert.false(input.validity.valid);
         assert.true(input.validity.customError);
       }
@@ -214,8 +220,8 @@ module('validity.js', function (hooks) {
       setValidity(subject, () => ['test-message']);
       subject.addEventListener('validated', () => eventCalls++);
       await validate(input);
-      assert.equal(eventCalls, 1);
-      assert.equal(input.validationMessage, 'test-message');
+      assert.strictEqual(eventCalls, 1);
+      assert.strictEqual(input.validationMessage, 'test-message');
       assert.false(input.validity.valid);
       assert.true(input.validity.customError);
     });
@@ -229,7 +235,7 @@ module('validity.js', function (hooks) {
         s.addEventListener('validate', () => eventCalls++)
       );
       await validate(...this.subjects);
-      assert.equal(eventCalls, 3);
+      assert.strictEqual(eventCalls, 3);
     });
 
     test('will call validations', async function (assert) {
@@ -237,7 +243,7 @@ module('validity.js', function (hooks) {
       let testValidate = () => (validationCalls++, []);
       this.subjects.forEach((s) => setValidity(s, testValidate, { on: '' }));
       await validate(...this.subjects);
-      assert.equal(validationCalls, 3);
+      assert.strictEqual(validationCalls, 3);
     });
 
     test('handles async tasks', async function (assert) {
@@ -249,7 +255,7 @@ module('validity.js', function (hooks) {
       };
       this.subjects.forEach((s) => setValidity(s, testValidate, { on: '' }));
       await validate(...this.subjects);
-      assert.equal(validationCalls, 3);
+      assert.strictEqual(validationCalls, 3);
     });
 
     test('handles null/undefined elements', async function (assert) {
@@ -257,7 +263,7 @@ module('validity.js', function (hooks) {
       let testValidate = () => (validationCalls++, []);
       this.subjects.forEach((s) => setValidity(s, testValidate, { on: '' }));
       await validate(...this.subjects, null, undefined);
-      assert.equal(validationCalls, 3);
+      assert.strictEqual(validationCalls, 3);
     });
   });
 
@@ -299,33 +305,39 @@ module('validity.js', function (hooks) {
     });
 
     test('handles bubbling to non-form element', function (assert) {
+      assert.expect(1);
+
       let done = assert.async();
       let submit = () => {
         assert.ok(true, 'submit callback called');
         done();
       };
-      assert.expect(1);
+
       verifyFormValidity(this.wrapper, { submit });
       this.requestSubmit();
     });
 
     test('called submit callback with all fields valid', function (assert) {
+      assert.expect(1);
+
       let done = assert.async();
       let submit = () => {
         assert.ok(true, 'submit callback called');
         done();
       };
-      assert.expect(1);
+
       verifyFormValidity(this.subject, { submit });
       setValidity(this.input, () => [], { on: '' });
       this.requestSubmit();
     });
 
     test('does not call submit callback with a field invalid', async function (assert) {
+      assert.expect(0);
+
       let submit = () => {
         assert.notOk(true, 'submit callback should not have been called');
       };
-      assert.expect(0);
+
       verifyFormValidity(this.subject, { submit });
       setValidity(this.input, () => ['test-message'], { on: '' });
       this.requestSubmit();

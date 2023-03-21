@@ -3,15 +3,17 @@ import { module, test } from 'qunit';
 import { fillIn, find, render, settled } from '@ember/test-helpers';
 import { setupRenderingTest } from 'ember-qunit';
 import { validate } from 'ember-validity-modifier';
-import { validatable, waitForValidated }
-  from 'dummy/tests/helpers/wait-for-validated';
+import {
+  validatable,
+  waitForValidated,
+} from 'dummy/tests/helpers/wait-for-validated';
 import sinon from 'sinon';
 import { helper } from '@ember/component/helper';
 
-module('Integration | Modifier | validity', function(hooks) {
+module('Integration | Modifier | validity', function (hooks) {
   setupRenderingTest(hooks);
 
-  test('single validator sets validity to true', async function(assert) {
+  test('single validator sets validity to true', async function (assert) {
     this.testValidator = sinon.stub().returns([]);
     await render(hbs`<input {{validity this.testValidator on=""}}>`);
     let subject = find('input');
@@ -21,7 +23,7 @@ module('Integration | Modifier | validity', function(hooks) {
     assert.strictEqual(subject.validationMessage, '');
   });
 
-  test('supports wrapped inputs', async function(assert) {
+  test('supports wrapped inputs', async function (assert) {
     this.testValidator = sinon.stub().returns([]);
     await render(hbs`
       <div {{validity this.testValidator on=""}}>
@@ -36,7 +38,7 @@ module('Integration | Modifier | validity', function(hooks) {
     assert.strictEqual(subject.validationMessage, '');
   });
 
-  test('handles multiple modifiers on a single element', async function() {
+  test('handles multiple modifiers on a single element', async function () {
     this.testValidator1 = sinon.stub().returns([]);
     this.testValidator2 = sinon.stub().returns([]);
     this.testValidator3 = sinon.stub().returns([]);
@@ -53,7 +55,7 @@ module('Integration | Modifier | validity', function(hooks) {
     sinon.assert.calledOnce(this.testValidator3);
   });
 
-  test('multiple validators sets validity to true', async function(assert) {
+  test('multiple validators sets validity to true', async function (assert) {
     this.testValidator1 = sinon.stub().returns([]);
     this.testValidator2 = sinon.stub().returns([]);
     this.testValidator3 = sinon.stub().returns([]);
@@ -74,7 +76,7 @@ module('Integration | Modifier | validity', function(hooks) {
     assert.strictEqual(subject.validationMessage, '');
   });
 
-  test('single validator sets validity to false', async function(assert) {
+  test('single validator sets validity to false', async function (assert) {
     this.testValidator = sinon.stub().returns(['test-invalid']);
     await render(hbs`<input {{validity this.testValidator on=""}}>`);
     let subject = find('input');
@@ -84,7 +86,7 @@ module('Integration | Modifier | validity', function(hooks) {
     assert.equal(subject.validationMessage, 'test-invalid');
   });
 
-  test('multiple validators sets validity to false', async function(assert) {
+  test('multiple validators sets validity to false', async function (assert) {
     this.testValidator1 = sinon.stub().returns([]);
     this.testValidator2 = sinon.stub().returns(['test-invalid']);
     this.testValidator3 = sinon.stub().returns([]);
@@ -105,8 +107,10 @@ module('Integration | Modifier | validity', function(hooks) {
     assert.equal(subject.validationMessage, 'test-invalid');
   });
 
-  test('single validator sets validity message to first failed error', async function(assert) {
-    this.testValidator = sinon.stub().returns(['test-invalid1', 'test-invalid2']);
+  test('single validator sets validity message to first failed error', async function (assert) {
+    this.testValidator = sinon
+      .stub()
+      .returns(['test-invalid1', 'test-invalid2']);
     await render(hbs`<input {{validity this.testValidator on=""}}>`);
     let subject = find('input');
     await validate(subject);
@@ -115,7 +119,7 @@ module('Integration | Modifier | validity', function(hooks) {
     assert.equal(subject.validationMessage, 'test-invalid1');
   });
 
-  test('asynchonous validator can set validity to true', async function(assert) {
+  test('asynchonous validator can set validity to true', async function (assert) {
     this.testValidator = sinon.stub().resolves([]);
     await render(hbs`<input {{validity this.testValidator on=""}}>`);
     let subject = find('input');
@@ -125,7 +129,7 @@ module('Integration | Modifier | validity', function(hooks) {
     assert.strictEqual(subject.validationMessage, '');
   });
 
-  test('asynchonous validator can set validity to false', async function(assert) {
+  test('asynchonous validator can set validity to false', async function (assert) {
     this.testValidator = sinon.stub().resolves(['test-invalid']);
     await render(hbs`<input {{validity this.testValidator on=""}}>`);
     let subject = find('input');
@@ -135,8 +139,8 @@ module('Integration | Modifier | validity', function(hooks) {
     assert.equal(subject.validationMessage, 'test-invalid');
   });
 
-  test('flattens multiple events in same validation execution', async function() {
-    let waitForValidations = new Promise(resolve => {
+  test('flattens multiple events in same validation execution', async function () {
+    let waitForValidations = new Promise((resolve) => {
       this.testValidator = sinon.stub().callsFake(() => (resolve(), []));
     });
     await render(hbs`<input {{validity this.testValidator on=""}}>`);
@@ -150,14 +154,14 @@ module('Integration | Modifier | validity', function(hooks) {
     sinon.assert.calledOnce(this.testValidator);
   });
 
-  test('auto validates on DOM events', async function() {
+  test('auto validates on DOM events', async function () {
     this.testValidator = sinon.stub().returns([]);
     await render(hbs`<input {{validity this.testValidator on="change"}}>`);
     await fillIn('input', 'foobar');
     sinon.assert.calledOnce(this.testValidator);
   });
 
-  test('auto validates on DOM events (comma-separated)', async function() {
+  test('auto validates on DOM events (comma-separated)', async function () {
     this.testValidator = sinon.stub().returns([]);
     await render(hbs`<input {{validity this.testValidator on="a ,b,c "}}>`);
     let subject = validatable(find('input'));
@@ -170,26 +174,30 @@ module('Integration | Modifier | validity', function(hooks) {
     sinon.assert.calledThrice(this.testValidator);
   });
 
-  test('auto validates on DOM events defaults to change,', async function() {
+  test('auto validates on DOM events defaults to change,', async function () {
     this.testValidator = sinon.stub().returns([]);
     await render(hbs`<input {{validity this.testValidator on="change"}}>`);
     await fillIn('input', 'foobar');
     sinon.assert.calledOnce(this.testValidator);
   });
 
-  test('validates on initial render if validateImmediately is true', async function() {
+  test('validates on initial render if validateImmediately is true', async function () {
     this.testValidator = sinon.stub().returns([]);
-    await render(hbs`<input {{validity this.testValidator on="" validateImmediately=true}}>`);
+    await render(
+      hbs`<input {{validity this.testValidator on="" validateImmediately=true}}>`
+    );
     sinon.assert.calledOnce(this.testValidator);
   });
 
-  test('validates non-input elements on initial render if validateImmediately is true', async function() {
+  test('validates non-input elements on initial render if validateImmediately is true', async function () {
     this.testValidator = sinon.stub().returns([]);
-    await render(hbs`<div {{validity this.testValidator on="" validateImmediately=true}}><input></div>`);
+    await render(
+      hbs`<div {{validity this.testValidator on="" validateImmediately=true}}><input></div>`
+    );
     sinon.assert.calledOnce(this.testValidator);
   });
 
-  test('validates if validateTracked is present and its argument changes', async function() {
+  test('validates if validateTracked is present and its argument changes', async function () {
     this.testValidator = sinon.stub().returns([]);
     this.set('match', 'foo');
     await render(hbs`<input {{validity
@@ -205,7 +213,7 @@ module('Integration | Modifier | validity', function(hooks) {
     sinon.assert.calledWith(this.testValidator.getCall(1), 'foo-bar');
   });
 
-  test('validates if validateTracked is present and an array of arguments that change', async function() {
+  test('validates if validateTracked is present and an array of arguments that change', async function () {
     this.testValidator = sinon.stub().returns([]);
     this.set('match1', 'foo1');
     this.set('match2', 'foo2');
@@ -221,16 +229,28 @@ module('Integration | Modifier | validity', function(hooks) {
     await fillIn('input', 'foo-bar');
     sinon.assert.callCount(this.testValidator, 3);
     sinon.assert.calledWith(this.testValidator.getCall(0), 'foo1-bar', 'foo2');
-    sinon.assert.calledWith(this.testValidator.getCall(1), 'foo1-bar', 'foo2-bar');
-    sinon.assert.calledWith(this.testValidator.getCall(2), 'foo1-bar', 'foo2-bar');
+    sinon.assert.calledWith(
+      this.testValidator.getCall(1),
+      'foo1-bar',
+      'foo2-bar'
+    );
+    sinon.assert.calledWith(
+      this.testValidator.getCall(2),
+      'foo1-bar',
+      'foo2-bar'
+    );
   });
 
-  test('manages updates through a helper without validateTracked', async function() {
+  test('manages updates through a helper without validateTracked', async function () {
     let validatorStub = sinon.stub().returns([]);
     this.owner.register(
       'helper:test-validator',
       // Use of [option] exercises this.match thus triggering autotracking
-      helper(([option]) => (...args) => validatorStub(option, ...args))
+      helper(
+        ([option]) =>
+          (...args) =>
+            validatorStub(option, ...args)
+      )
     );
     this.set('match', 'foo');
     await render(hbs`<input {{validity (test-validator this.match) on=""}}>`);
@@ -254,14 +274,20 @@ module('Integration | Modifier | validity', function(hooks) {
     );
   });
 
-  test('manages updates through a helper with validateImmediately true', async function() {
+  test('manages updates through a helper with validateImmediately true', async function () {
     let validatorStub = sinon.stub().returns([]);
     this.owner.register(
       'helper:test-validator',
-      helper(([option]) => (...args) => validatorStub(option, ...args))
+      helper(
+        ([option]) =>
+          (...args) =>
+            validatorStub(option, ...args)
+      )
     );
     this.set('match', 'foo');
-    await render(hbs`<input {{validity (test-validator this.match) on="" validateImmediately=true}}>`);
+    await render(
+      hbs`<input {{validity (test-validator this.match) on="" validateImmediately=true}}>`
+    );
     this.set('match', 'foo-bar');
     await settled();
     sinon.assert.calledTwice(validatorStub);
@@ -276,5 +302,4 @@ module('Integration | Modifier | validity', function(hooks) {
       sinon.match.instanceOf(Element)
     );
   });
-
 });

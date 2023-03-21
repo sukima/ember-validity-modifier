@@ -11,16 +11,16 @@ class IndexModel {
 }
 
 export default class IndexExampleRoute extends Route {
-
   model() {
     let model = new IndexModel();
-    model.addUser(new User({
-      name: 'Ralph Wreck-it',
-      phone: '555-1234',
-      email: 'ralph@fixitfelix.com',
-      password: 'foobar'
-    }));
+    model.addUser(
+      new User({
+        name: 'Ralph Wreck-it',
+        phone: '555-1234',
+        email: 'ralph@fixitfelix.com',
+        password: 'foobar',
+      })
+    );
     return model;
   }
-
 }

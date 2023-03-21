@@ -7,10 +7,13 @@ export function validatePassword() {
       [/[0-9]/, 'Password must contain at least one number.'],
       [/[a-z]/, 'Password must contain at least one lowercase letter.'],
       [/[A-Z]/, 'Password must contain at least one uppercase letter.'],
-      [/[^a-zA-Z0-9\s]/, 'Password must contain at least one special character.'],
+      [
+        /[^a-zA-Z0-9\s]/,
+        'Password must contain at least one special character.',
+      ],
     ];
     return requirements
-      .map(([predicate, message]) => predicate.test(value) ? null : message)
+      .map(([predicate, message]) => (predicate.test(value) ? null : message))
       .filter(Boolean);
   };
 }

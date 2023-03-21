@@ -41,7 +41,9 @@ class EventsManager {
     this.#element = element;
   }
   add(name, handler) {
-    if (this.#store.has(this.#element, name)) { return; }
+    if (this.#store.has(this.#element, name)) {
+      return;
+    }
     this.#store.append(this.#element, [name]);
     this.#element.addEventListener(name, handler);
     this.#listeners.set(name, handler);
@@ -69,7 +71,7 @@ class Latch {
 }
 
 async function reduceValidators(validators, ...args) {
-  let promises = Array.from(validators, validator => validator(...args));
+  let promises = Array.from(validators, (validator) => validator(...args));
   let errors = await Promise.all(promises);
   return Array.from(new Set(errors.reduce((a, b) => [...a, ...b], [])));
 }
@@ -79,18 +81,26 @@ function validateElement(element) {
     let event = new CustomEvent('validate', {
       bubbles: true,
       cancelable: true,
-      detail: { resolve, reject }
+      detail: { resolve, reject },
     });
     let wasNotPrevented = element?.dispatchEvent(event) ?? true;
-    if (wasNotPrevented) { resolve(); }
+    if (wasNotPrevented) {
+      resolve();
+    }
   });
 }
 
 const eventsStore = new ListStore();
 const validatorsStore = new ListStore();
 const noop = () => {};
-const rethrow = (error) => { throw error; };
-const commaSeperate = s => s.split(',').map(i => i.trim()).filter(Boolean);
+const rethrow = (error) => {
+  throw error;
+};
+const commaSeperate = (s) =>
+  s
+    .split(',')
+    .map((i) => i.trim())
+    .filter(Boolean);
 
 export function validate(...elements) {
   return Promise.all(elements.map(validateElement));
@@ -109,11 +119,16 @@ export function setValidity(
   const updateValidity = ({ target }) => {
     latch.bump();
     lastTask = lastTask.then(async () => {
-      if (!latch.check()) { return; }
+      if (!latch.check()) {
+        return;
+      }
       target.setCustomValidity?.('');
       target.checkValidity?.();
       let nativeErrors = [target.validationMessage].filter(Boolean);
-      let customErrors = await reduceValidators(validatorsStore.get(element), target);
+      let customErrors = await reduceValidators(
+        validatorsStore.get(element),
+        target
+      );
       let errors = [...customErrors, ...nativeErrors];
       let detail = { errors, customErrors, nativeErrors };
       target.setCustomValidity?.(customErrors[0] ?? '');
@@ -136,7 +151,7 @@ export function setValidity(
   validatorsStore.append(element, validators);
 
   eventsManager.add('validate', validateHandler);
-  eventNames.forEach(evt => eventsManager.add(evt, updateValidity));
+  eventNames.forEach((evt) => eventsManager.add(evt, updateValidity));
 
   return () => {
     eventsManager.removeAll();
@@ -151,7 +166,7 @@ export function verifyFormValidity(
   let originalNoValidate = formElement.noValidate;
   let checkMethod = reportValidity ? 'reportValidity' : 'checkValidity';
 
-  const submitHandler = async event => {
+  const submitHandler = async (event) => {
     let submitAction = submit ?? (() => event.target.submit());
     event.preventDefault();
     await validate(...event.target.elements);
@@ -161,10 +176,10 @@ export function verifyFormValidity(
   };
 
   formElement.noValidate = true;
-  formElement.addEventListener('submit', submitHandler)
+  formElement.addEventListener('submit', submitHandler);
 
   return () => {
     formElement.noValidate = originalNoValidate;
-    formElement.removeEventListener('submit', submitHandler)
+    formElement.removeEventListener('submit', submitHandler);
   };
 }

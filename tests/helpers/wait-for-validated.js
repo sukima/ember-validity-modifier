@@ -3,14 +3,14 @@ const validatedEventAttached = new WeakSet();
 
 function createDeferred() {
   let resolve;
-  let promise = new Promise(i => resolve = i);
+  let promise = new Promise((i) => (resolve = i));
   return { resolve, promise };
 }
 
 export function validatable(element) {
   if (!validatedEventAttached.has(element)) {
     validatedEventAttached.add(element);
-    element.addEventListener('validated', event => {
+    element.addEventListener('validated', (event) => {
       if (!assignedDeferreds.has(element)) {
         assignedDeferreds.set(element, createDeferred());
       }

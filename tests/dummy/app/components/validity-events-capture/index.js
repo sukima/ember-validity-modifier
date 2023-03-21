@@ -17,12 +17,15 @@ export default class ValidityEventsCapture extends Component {
 
   @action
   recordEvent(event) {
-    let { type, target: { name } } = event;
+    let {
+      type,
+      target: { name },
+    } = event;
     let events = this.eventBuffers.get(name) ?? [];
     events.push(event);
     this.eventBuffers.set(name, events);
     if (type === 'validated') {
-      this.flushEventBucket(name)
+      this.flushEventBucket(name);
     }
   }
 

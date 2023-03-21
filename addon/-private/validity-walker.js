@@ -25,4 +25,3 @@ export default class ValidityWalker {
     return 'setCustomValidity' in node ? FILTER_ACCEPT : FILTER_REJECT;
   }
 }
-

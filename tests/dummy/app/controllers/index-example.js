@@ -23,7 +23,7 @@ export default class IndexExampleController extends Controller {
     elements[0].focus();
     requestAnimationFrame(() => {
       form.reset();
-      elements.forEach(e => e.dataset.state = 'clean');
+      elements.forEach((e) => (e.dataset.state = 'clean'));
     });
   }
 }

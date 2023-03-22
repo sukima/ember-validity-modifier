@@ -5,18 +5,21 @@ import { setupRenderingTest } from 'ember-qunit';
 import { validate } from 'ember-validity-modifier';
 import sinon from 'sinon';
 
-module('Integration | Utility | validate', function(hooks) {
+module('Integration | Utility | validate', function (hooks) {
   setupRenderingTest(hooks);
 
-  test(`dispatches the 'validate' DOM event`, async function() {
+  test(`dispatches the 'validate' DOM event`, async function () {
     this.validateSpy = sinon.spy();
     await render(hbs`<input {{on "validate" this.validateSpy}}>`);
     validate(find('input'));
     sinon.assert.calledOnce(this.validateSpy);
-    sinon.assert.calledWith(this.validateSpy, sinon.match.has('type', 'validate'));
+    sinon.assert.calledWith(
+      this.validateSpy,
+      sinon.match.has('type', 'validate')
+    );
   });
 
-  test('handles multiple elements', async function() {
+  test('handles multiple elements', async function () {
     this.validateSpy = sinon.spy();
     await render(hbs`
       <input {{on "validate" this.validateSpy}}>
@@ -25,10 +28,13 @@ module('Integration | Utility | validate', function(hooks) {
     `);
     validate(...findAll('input'));
     sinon.assert.calledThrice(this.validateSpy);
-    sinon.assert.alwaysCalledWith(this.validateSpy, sinon.match.has('type', 'validate'));
+    sinon.assert.alwaysCalledWith(
+      this.validateSpy,
+      sinon.match.has('type', 'validate')
+    );
   });
 
-  test(`returns a promise that resolves when elements recieve a 'validated' event`, async function() {
+  test(`returns a promise that resolves when elements recieve a 'validated' event`, async function () {
     this.validateSpy = sinon.spy();
     await render(hbs`
       <input {{on "validate" this.validateSpy}}>
@@ -38,9 +44,12 @@ module('Integration | Utility | validate', function(hooks) {
     let subjects = findAll('input');
     let resultPromise = validate(...subjects);
     let validatedEvent = new CustomEvent('validated');
-    subjects.forEach(i => i.dispatchEvent(validatedEvent));
+    subjects.forEach((i) => i.dispatchEvent(validatedEvent));
     await resultPromise;
     sinon.assert.calledThrice(this.validateSpy);
-    sinon.assert.alwaysCalledWith(this.validateSpy, sinon.match.has('type', 'validate'));
+    sinon.assert.alwaysCalledWith(
+      this.validateSpy,
+      sinon.match.has('type', 'validate')
+    );
   });
 });

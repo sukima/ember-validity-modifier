@@ -4,7 +4,9 @@ const SHORT_COLUMN = 32;
 const LONG_COLUMN = 64;
 
 function truncate(str, column) {
-  if (str.length <= column) { return str; }
+  if (str.length <= column) {
+    return str;
+  }
   let truncated = str.substr(0, column);
   let ellipses = /[.!?]$/.test(truncated) ? '' : '…';
   return `${truncated}${ellipses}`;
@@ -24,15 +26,17 @@ export default class EventSequenceVisualizer extends Component {
   }
 
   get plantUmlSource() {
-    const shortStr = s => truncate(s, SHORT_COLUMN);
-    const longStr = s => truncate(s, LONG_COLUMN);
+    const shortStr = (s) => truncate(s, SHORT_COLUMN);
+    const longStr = (s) => truncate(s, LONG_COLUMN);
     let { latestInitiator: eventName, latestErrors, latestCustomErrors } = this;
-    let errors = latestErrors.length > 1
-      ? `[\\n  '${latestErrors.map(longStr).join('\',\\n  \'')}'\\n]`
-      : `['${latestErrors[0] || ''}']`;
-    let customValidityMessage = latestCustomErrors[0]?.length > SHORT_COLUMN
-      ? `\\n  '${shortStr(latestCustomErrors[0])}'\\n`
-      : `'${latestCustomErrors[0] || ''}'`;
+    let errors =
+      latestErrors.length > 1
+        ? `[\\n  '${latestErrors.map(longStr).join("',\\n  '")}'\\n]`
+        : `['${latestErrors[0] || ''}']`;
+    let customValidityMessage =
+      latestCustomErrors[0]?.length > SHORT_COLUMN
+        ? `\\n  '${shortStr(latestCustomErrors[0])}'\\n`
+        : `'${latestCustomErrors[0] || ''}'`;
     return `
 @startuml
 participant DOM

@@ -11,8 +11,8 @@ function requestSubmit(form) {
 module('Integration | Modifier | verify-form-validity', function (hooks) {
   setupRenderingTest(hooks);
 
-  hooks.beforeEach(function() {
-    this.preventInfinateRefreshLoop = event => event.preventDefault();
+  hooks.beforeEach(function () {
+    this.preventInfinateRefreshLoop = (event) => event.preventDefault();
   });
 
   test('calls native submit() by default', async function () {
@@ -27,12 +27,11 @@ module('Integration | Modifier | verify-form-validity', function (hooks) {
     `);
     let form = find('#test-form');
     let submitStub = sinon.stub(form, 'submit');
-    let waitForSubmit = new Promise(done => submitStub.callsFake(done));
+    let waitForSubmit = new Promise((done) => submitStub.callsFake(done));
     requestSubmit(form);
     await waitForSubmit;
     sinon.assert.called(submitStub);
   });
-
 
   test('adds novalidate attribute', async function (assert) {
     await render(hbs`
@@ -47,7 +46,7 @@ module('Integration | Modifier | verify-form-validity', function (hooks) {
 
   test('handles bubbling to non-form element', async function () {
     this.submitStub = sinon.stub();
-    let waitForSubmit = new Promise(done => this.submitStub.callsFake(done));
+    let waitForSubmit = new Promise((done) => this.submitStub.callsFake(done));
     await render(hbs`
       <div
         id="test-form-wrapper"
@@ -69,7 +68,7 @@ module('Integration | Modifier | verify-form-validity', function (hooks) {
   test('called submit callback with all fields valid', async function () {
     this.submitStub = sinon.stub();
     this.testValidator = sinon.stub().returns([]);
-    let waitForSubmit = new Promise(done => this.submitStub.callsFake(done));
+    let waitForSubmit = new Promise((done) => this.submitStub.callsFake(done));
     await render(hbs`
       <form
         id="test-form"
@@ -100,7 +99,7 @@ module('Integration | Modifier | verify-form-validity', function (hooks) {
       </form>
     `);
     requestSubmit(find('#test-form'));
-    await new Promise(r => setTimeout(r, 10));
+    await new Promise((r) => setTimeout(r, 10));
     sinon.assert.called(this.testValidator);
     sinon.assert.notCalled(this.submitStub);
   });

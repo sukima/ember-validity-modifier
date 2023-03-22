@@ -14,11 +14,13 @@ export default class AutoTrackingExerciser {
   }
 
   exercise(callback) {
-    this.props.forEach(i => i);
+    this.props.forEach((i) => i);
     let hasInitialized = initializedElements.has(this.#element);
     let shouldValidate = hasInitialized && this.props.length;
     initializedElements.add(this.#element);
-    if (this.runImmediatly || shouldValidate) { callback(this.#element); }
+    if (this.runImmediatly || shouldValidate) {
+      callback(this.#element);
+    }
   }
 
   static from(maybeProps, element) {

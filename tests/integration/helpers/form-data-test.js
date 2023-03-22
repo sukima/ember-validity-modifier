@@ -7,15 +7,17 @@ module('Integration | Helper | form-data', function (hooks) {
   setupRenderingTest(hooks);
 
   test('Wraps a callback to pass in a FormData object', async function (assert) {
+    assert.expect(4);
+
     let done = assert.async();
 
     this.testSubmit = (data, event) => {
       event.preventDefault();
 
       assert.ok(data instanceof FormData, 'expected a FormData instance');
-      assert.equal(data.get('foo'), 'FOO');
-      assert.equal(data.get('bar'), 'BAR');
-      assert.equal(data.get('baz'), 'BAZ');
+      assert.strictEqual(data.get('foo'), 'FOO');
+      assert.strictEqual(data.get('bar'), 'BAR');
+      assert.strictEqual(data.get('baz'), 'BAZ');
 
       done();
     };

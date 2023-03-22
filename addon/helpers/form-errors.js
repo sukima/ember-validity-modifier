@@ -11,7 +11,11 @@ function errorsFromValidityMessage(message) {
 
 function errorsFromArray(messages) {
   return isPresent(messages)
-    ? { customErrors: messages, errors: messages, validationMessage: messages[0] }
+    ? {
+        customErrors: messages,
+        errors: messages,
+        validationMessage: messages[0],
+      }
     : {};
 }
 
@@ -30,26 +34,24 @@ export class FormErrors {
   @tracked _errors = new Map();
 
   get for() {
-    return Object.fromEntries(
-      [...this._errors].map(extractProperty('errors')),
-    );
+    return Object.fromEntries([...this._errors].map(extractProperty('errors')));
   }
 
   get native() {
     return Object.fromEntries(
-      [...this._errors].map(extractProperty('nativeErrors')),
+      [...this._errors].map(extractProperty('nativeErrors'))
     );
   }
 
   get custom() {
     return Object.fromEntries(
-      [...this._errors].map(extractProperty('customErrors')),
+      [...this._errors].map(extractProperty('customErrors'))
     );
   }
 
   get message() {
     return Object.fromEntries(
-      [...this._errors].map(extractProperty('validationMessage')),
+      [...this._errors].map(extractProperty('validationMessage'))
     );
   }
 
@@ -64,7 +66,7 @@ export class FormErrors {
 
     this._errors = new Map([...this._errors, [name, errors]]);
   }
-  
+
   @action
   from(name, { detail, target: { validationMessage } }) {
     let errors = detail

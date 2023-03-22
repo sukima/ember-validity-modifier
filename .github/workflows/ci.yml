@@ -64,7 +64,10 @@ jobs:
           - ember-canary
           - ember-classic
           - embroider-safe
-          - embroider-optimized
+        experimental: [false]
+        include:
+          - try-scenario: embroider-optimized
+            experimental: true
 
     steps:
       - uses: actions/checkout@v3

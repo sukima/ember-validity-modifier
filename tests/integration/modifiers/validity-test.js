@@ -243,17 +243,16 @@ module('Integration | Modifier | validity', function (hooks) {
 
   test('manages updates through a helper without validateTracked', async function () {
     let validatorStub = sinon.stub().returns([]);
-    this.owner.register(
-      'helper:test-validator',
+    let testValidator = helper(
       // Use of [option] exercises this.match thus triggering autotracking
-      helper(
-        ([option]) =>
-          (...args) =>
-            validatorStub(option, ...args)
-      )
+      ([option]) =>
+        (...args) =>
+          validatorStub(option, ...args)
     );
-    this.set('match', 'foo');
-    await render(hbs`<input {{validity (test-validator this.match) on=""}}>`);
+    this.setProperties({ testValidator, match: 'foo' });
+    await render(hbs`
+      <input {{validity (this.testValidator this.match) on=""}}>
+    `);
     let subject = validatable(find('input'));
     subject.dispatchEvent(new CustomEvent('validate'));
     await waitForValidated(subject);
@@ -276,18 +275,20 @@ module('Integration | Modifier | validity', function (hooks) {
 
   test('manages updates through a helper with validateImmediately true', async function () {
     let validatorStub = sinon.stub().returns([]);
-    this.owner.register(
-      'helper:test-validator',
-      helper(
-        ([option]) =>
-          (...args) =>
-            validatorStub(option, ...args)
-      )
+    let testValidator = helper(
+      ([option]) =>
+        (...args) =>
+          validatorStub(option, ...args)
     );
-    this.set('match', 'foo');
-    await render(
-      hbs`<input {{validity (test-validator this.match) on="" validateImmediately=true}}>`
-    );
+    this.setProperties({ testValidator, match: 'foo' });
+    await render(hbs`
+      <input
+        {{validity
+          (this.testValidator this.match)
+          on=""
+          validateImmediately=true}}
+      >
+    `);
     this.set('match', 'foo-bar');
     await settled();
     sinon.assert.calledTwice(validatorStub);
